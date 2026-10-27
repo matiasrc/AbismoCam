@@ -37,6 +37,7 @@ public class NdiTransportTest {
     }
     @Test public void switchBothWaysPreservesVideoSettingsAndPersistsSdkConfig() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        context.stopService(new android.content.Intent(context, TransmissionService.class)); SystemClock.sleep(300);
         String previous = context.getSharedPreferences("config", 0).getString("json", "{}");
         try {
             Config initial = new Config(); initial.save(context);
@@ -60,7 +61,7 @@ public class NdiTransportTest {
                     awaitFrames(scenario);
                     Config saved = Config.load(context);
                     assertEquals(multicast, saved.ndiMulticast);
-                    assertEquals("abismoCam", saved.sourceName); assertEquals(960, saved.width); assertEquals(30, saved.fps);
+                    assertEquals("abismoCam_0001", saved.sourceName()); assertEquals(576, saved.width); assertEquals(30, saved.fps);
                     File file = new File(context.getFilesDir(), "ndi/ndi-config.v1.json");
                     JSONObject send = new JSONObject(new String(Files.readAllBytes(file.toPath()), java.nio.charset.StandardCharsets.UTF_8))
                         .getJSONObject("ndi").getJSONObject("multicast").getJSONObject("send");

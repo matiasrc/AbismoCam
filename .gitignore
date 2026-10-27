@@ -5,5 +5,8 @@ local.properties
 *.iml
 app/src/main/jniLibs/**/*.so
 tools/*.zip
+entregables/*.zip
 captures/
 *-build.log
+.DS_Store
+**/.DS_Store

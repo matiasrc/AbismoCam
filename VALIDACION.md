@@ -1,3 +1,38 @@
+# abismoCam 0.9.0 — transmisión en segundo plano — 25 de octubre de 2026
+
+- APK compilado con NDI ARM64 y x86_64; 18 pruebas unitarias aprobadas. Lint: 0 errores y 26 advertencias.
+- Dos pruebas Android nuevas aprobadas en el APK final: continuidad de cuadros después de seis segundos en segundo plano y otros seis con pantalla apagada, misma instancia nativa del sender al volver y recrear la actividad, cierre de cámara/sender al eliminar la tarea mediante `finishAndRemoveTask`, y detención mediante la acción de notificación sin reinicio al volver. Informe: `entregables/validacion/background-v9-final.txt` (también contiene el fallo de captura explicado abajo).
+- Regresión: siete de ocho pruebas Android aprobaron. Se verificaron seis combinaciones de calidad/FPS, captura inmediata con JPEG y OSC, cancelación OSC, identidad persistente y renovación, cambio Unicast/Multicast y ajustes OSC/cuenta. Informe: `background-v9-regression.txt`.
+- La prueba de captura de cinco segundos falló en la serie, en ejecución aislada y en la comprobación final, al esperar el congelado. No se considera aprobada. El diagnóstico final muestra 14 cuadros enviados, ausencia de análisis nuevo durante unos seis segundos y el executor esperando trabajo; la última llamada NDI había retornado. Es compatible con la falta de cuadros observada en versiones anteriores del emulador, pero no confirma la causa ni descarta un problema físico. Informes: `background-v9-capture-isolated.txt` y `background-v9-capture-diagnostic.txt`.
+- Se serializó el cierre del SDK y el inicio de sesiones nuevas en el mismo executor del proceso, para evitar superponer operaciones de inicialización/destrucción al cerrar y reabrir rápidamente.
+- Verificación visual de la notificación y servicio Android marcado como foreground con la app oculta: `background-v9.png`. La notificación muestra el nombre del sender y permite detener NDI.
+- Estas pruebas comprueban envíos al SDK, no recepción externa. Pendiente probar en A51 y los demás teléfonos: pantalla bloqueada durante una sesión prolongada, ahorro de batería, recepción simultánea, eliminación desde recientes y captura de cinco segundos. No se garantiza continuidad si Android mata el proceso o se pierde la red.
+
+## Historial de validación
+
+# abismoCam 0.8.0 — identidad NDI — 23 de octubre de 2026
+
+- APK compilado con bibliotecas NDI ARM64 y x86_64; 18 pruebas unitarias aprobadas. Lint: 0 errores y 28 advertencias; las dos nuevas corresponden a localización del texto del nombre de fuente.
+- Pruebas unitarias nuevas: nombres con y sin identificador, mínimo de cuatro cifras, paso de 9999 a 10000, números mayores que un entero de 64 bits, validación del identificador y recuperación de contadores inválidos.
+- Dos pruebas Android aprobadas en API 36.1: migración desde esquema 4 sin perder calidad/OSC/transporte/cuenta, guardado y recarga del identificador y contador; renovación activa; aplicación del identificador solo al guardar; conservación del contador al renombrar; renovación y cambio de identificador con NDI detenido; reinicio manual posterior y recreación de actividad manteniendo el nombre.
+- La prueba inspecciona el nombre pasado al sender del SDK y verifica que inicia; no hay receptores externos conectados. Informe: `entregables/validacion/sender-v8.txt`.
+- Revisión visual del panel de configuración: `entregables/validacion/sender-v8.png`.
+- Pendiente: varios teléfonos con identificadores distintos, selección de fuentes nuevas en los receptores físicos y comportamiento ante fuentes obsoletas o bloqueos reales. No se garantiza recuperar una llamada nativa bloqueada cambiando el nombre.
+- El primer intento de instalación se hizo antes de finalizar el arranque del emulador y fue rechazado; las pruebas informadas se ejecutaron después de instalar correctamente ambos APK.
+
+## Historial de validación
+
+# abismoCam 0.7.0 — encuadre 4:5 — 18 de octubre de 2026
+
+- APK compilado correctamente con NDI ARM64 y x86_64. Dieciséis pruebas unitarias aprobadas; lint con 0 errores y 26 advertencias.
+- Tres pruebas Android de encuadre aprobadas: migración de las tres calidades sin perder otros ajustes, persistencia del esquema 4, recorte desplazado con filas RGBA acolchadas y sin espejo accidental, y ventana 4:5 adaptable a espacios altos y bajos. Informe: `entregables/validacion/aspect-v7-unit-android.txt`.
+- Cuatro pruebas de flujo Android aprobadas en el emulador API 36.1: seis combinaciones de calidad/FPS con dimensiones exactas en el cuadro entregado al SDK NDI; controles fuera del área de imagen; ajustes protegidos; captura de cinco segundos con avance de NDI durante el congelado; captura inmediata con JPEG de 576 × 720; ráfagas OSC y cancelación. Informe: `entregables/validacion/aspect-v7-camera.txt`.
+- Revisión visual: ventana de 1080 × 1350 píxeles (4:5) en pantalla de 1080 × 2400. Encabezado, disparador y estados quedan en las bandas negras, sin superposición sobre la cámara. Captura: `entregables/validacion/aspect-v7.png`.
+- Las pruebas usan cámara sintética del emulador y verifican envíos al SDK; no comprueban recepción NDI externa ni FPS sostenidos en el A51. Pendiente comparar encuadre, orientación y espejo en teléfono, JPEG y receptor real para las tres calidades.
+- La regresión de cinco segundos aprobó esta vez. No se considera resuelta la falla intermitente del emulador registrada en versiones anteriores; sigue pendiente la validación física sostenida.
+
+## Historial de validación
+
 # abismoCam 0.6.0 — cuenta regresiva — 1 de octubre de 2026
 
 - Compilación correcta; dieciséis pruebas unitarias aprobadas; lint con 0 errores y 26 advertencias.

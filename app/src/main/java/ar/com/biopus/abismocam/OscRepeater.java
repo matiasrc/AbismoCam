@@ -6,9 +6,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-/** Cinco datagramas por estado. Un nuevo estado cancela las repeticiones anteriores. */
+/** Diez datagramas por estado. Un nuevo estado cancela las repeticiones anteriores. */
 final class OscRepeater implements AutoCloseable {
-    static final int COUNT = 5;
+    static final int COUNT = 10;
     private final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
     private final List<ScheduledFuture<?>> pending = new ArrayList<>();
     private final Osc.Sink sink;
@@ -28,7 +28,7 @@ final class OscRepeater implements AutoCloseable {
         schedule(targets, address, value, interval, false);
     }
 
-    /** Sin cuenta: 1 en 0..4 intervalos, 0 en 5..9, sin bloquear la captura. */
+    /** Sin cuenta: 1 en 0..9 intervalos, 0 en 10..19, sin bloquear la captura. */
     synchronized void sendPulse(List<Osc.Destination> targets, String address, int interval) {
         schedule(targets, address, 1, interval, true);
     }

@@ -179,7 +179,7 @@ document.getElementById(id).style.display = 'none';
     <div class="mdl-layout__header-row">
       <span class="mdl-layout-title">Lint Report: 26 warnings</span>
       <div class="mdl-layout-spacer"></div>
-      <nav class="mdl-navigation mdl-layout--large-screen-only">Check performed at Thu Oct 01 14:20:31 ART 2026 by AGP (8.13.2)</nav>
+      <nav class="mdl-navigation mdl-layout--large-screen-only">Check performed at Sun Oct 25 17:22:13 ART 2026 by AGP (8.13.2)</nav>
     </div>
   </header>
   <div class="mdl-layout__drawer">
@@ -193,8 +193,9 @@ document.getElementById(id).style.display = 'none';
       <a class="mdl-navigation__link" href="#NewerVersionAvailable"><i class="material-icons warning-icon">warning</i>Newer Library Versions Available (1)</a>
       <a class="mdl-navigation__link" href="#DiscouragedApi"><i class="material-icons warning-icon">warning</i>Using discouraged APIs (1)</a>
       <a class="mdl-navigation__link" href="#DataExtractionRules"><i class="material-icons warning-icon">warning</i>Missing data extraction rules (1)</a>
+      <a class="mdl-navigation__link" href="#WakelockTimeout"><i class="material-icons warning-icon">warning</i>Using wakeLock without timeout (1)</a>
       <a class="mdl-navigation__link" href="#ClickableViewAccessibility"><i class="material-icons warning-icon">warning</i>Accessibility in Custom Views (2)</a>
-      <a class="mdl-navigation__link" href="#SetTextI18n"><i class="material-icons warning-icon">warning</i>TextView Internationalization (11)</a>
+      <a class="mdl-navigation__link" href="#SetTextI18n"><i class="material-icons warning-icon">warning</i>TextView Internationalization (10)</a>
     </nav>
   </div>
   <main class="mdl-layout__content">
@@ -232,6 +233,11 @@ document.getElementById(id).style.display = 'none';
 <tr>
 <td class="countColumn">1</td><td class="issueColumn"><i class="material-icons warning-icon">warning</i>
 <a href="#DataExtractionRules">DataExtractionRules</a>: Missing data extraction rules</td></tr>
+<tr><td class="countColumn"></td><td class="categoryColumn"><a href="#Performance">Performance</a>
+</td></tr>
+<tr>
+<td class="countColumn">1</td><td class="issueColumn"><i class="material-icons warning-icon">warning</i>
+<a href="#WakelockTimeout">WakelockTimeout</a>: Using wakeLock without timeout</td></tr>
 <tr><td class="countColumn"></td><td class="categoryColumn"><a href="#Accessibility">Accessibility</a>
 </td></tr>
 <tr>
@@ -240,7 +246,7 @@ document.getElementById(id).style.display = 'none';
 <tr><td class="countColumn"></td><td class="categoryColumn"><a href="#Internationalization">Internationalization</a>
 </td></tr>
 <tr>
-<td class="countColumn">11</td><td class="issueColumn"><i class="material-icons warning-icon">warning</i>
+<td class="countColumn">10</td><td class="issueColumn"><i class="material-icons warning-icon">warning</i>
 <a href="#SetTextI18n">SetTextI18n</a>: TextView Internationalization</td></tr>
 <tr><td></td><td class="categoryColumn"><a href="#ExtraIssues">Included Additional Checks (8)</a>
 </td></tr>
@@ -267,10 +273,11 @@ Dismiss</button>            </div>
 <span class="lineno">  8 </span>    defaultConfig {
 <span class="lineno">  9 </span>        applicationId <span class="string">'ar.com.biopus.abismocam'</span>
 <span class="lineno"> 10 </span>        minSdk <span class="number">26</span>
-<span class="caretline"><span class="lineno"> 11 </span>        <span class="warning">targetSdk <span class="number">35</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-<span class="lineno"> 12 </span>        versionCode <span class="number">7</span>
-<span class="lineno"> 13 </span>        versionName <span class="string">'0.6.0'</span>
-<span class="lineno"> 14 </span>        testInstrumentationRunner <span class="string">'androidx.test.runner.AndroidJUnitRunner'</span></pre>
+<span class="caretline"><span class="lineno"> 11 </span>        <span class="warning">targetSdk <span class="number">35</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="lineno"> 12 </span>        versionCode <span class="number">10</span>
+<span class="lineno"> 13 </span>        versionName <span class="string">'0.9.0'</span>
+<span class="lineno"> 14 </span>        testInstrumentationRunner <span class="string">'androidx.test.runner.AndroidJUnitRunner'</span>
+</pre>
 
 </div>
 <div class="metadata"><div class="explanation" id="explanationOldTargetApi" style="display: none;">
@@ -313,7 +320,7 @@ Dismiss</button>            </div>
               <div class="mdl-card__supporting-text">
 <div class="issue">
 <div class="warningslist">
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/gradle/wrapper/gradle-wrapper.properties">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\gradle\wrapper\gradle-wrapper.properties</a>:3</span>: <span class="message">A newer version of Gradle than 8.13 is available: 8.14.5</span><br /><pre class="errorlines">
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/gradle/wrapper/gradle-wrapper.properties">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\gradle\wrapper\gradle-wrapper.properties</a>:3</span>: <span class="message">A newer version of Gradle than 8.13 is available: 8.14.6</span><br /><pre class="errorlines">
 <span class="lineno"> 1 </span>distributionBase=GRADLE_USER_HOME
 <span class="lineno"> 2 </span>distributionPath=wrapper/dists
 <span class="caretline"><span class="lineno"> 3 </span>distributionUrl=<span class="warning">https\://services.gradle.org/distributions/gradle-8.13-bin.zip</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -362,43 +369,47 @@ Dismiss</button>            </div>
 <span class="lineno"> 23 </span>}
 <span class="lineno"> 24 </span>
 <span class="lineno"> 25 </span>dependencies {
-<span class="caretline"><span class="lineno"> 26 </span>    implementation <span class="warning"><span class="string">'androidx.activity:activity:1.10.1'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="caretline"><span class="lineno"> 26 </span>    implementation <span class="warning"><span class="string">'androidx.activity:activity:1.10.1'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 <span class="lineno"> 27 </span>    implementation <span class="string">'androidx.camera:camera-camera2:1.4.2'</span>
 <span class="lineno"> 28 </span>    implementation <span class="string">'androidx.camera:camera-lifecycle:1.4.2'</span>
-<span class="lineno"> 29 </span>    implementation <span class="string">'androidx.camera:camera-view:1.4.2'</span></pre>
+<span class="lineno"> 29 </span>    implementation <span class="string">'androidx.camera:camera-view:1.4.2'</span>
+</pre>
 
 <span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/build.gradle">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\build.gradle</a>:27</span>: <span class="message">A newer version of androidx.camera:camera-camera2 than 1.4.2 is available: 1.6.2</span><br /><pre class="errorlines">
 <span class="lineno"> 24 </span>
 <span class="lineno"> 25 </span>dependencies {
 <span class="lineno"> 26 </span>    implementation <span class="string">'androidx.activity:activity:1.10.1'</span>
-<span class="caretline"><span class="lineno"> 27 </span>    implementation <span class="warning"><span class="string">'androidx.camera:camera-camera2:1.4.2'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="caretline"><span class="lineno"> 27 </span>    implementation <span class="warning"><span class="string">'androidx.camera:camera-camera2:1.4.2'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 <span class="lineno"> 28 </span>    implementation <span class="string">'androidx.camera:camera-lifecycle:1.4.2'</span>
 <span class="lineno"> 29 </span>    implementation <span class="string">'androidx.camera:camera-view:1.4.2'</span>
-<span class="lineno"> 30 </span>    implementation <span class="string">'net.java.dev.jna:jna:5.17.0@aar'</span></pre>
+<span class="lineno"> 30 </span>    implementation <span class="string">'net.java.dev.jna:jna:5.17.0@aar'</span>
+</pre>
 
 <span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/build.gradle">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\build.gradle</a>:28</span>: <span class="message">A newer version of androidx.camera:camera-lifecycle than 1.4.2 is available: 1.6.2</span><br /><pre class="errorlines">
 <span class="lineno"> 25 </span>dependencies {
 <span class="lineno"> 26 </span>    implementation <span class="string">'androidx.activity:activity:1.10.1'</span>
 <span class="lineno"> 27 </span>    implementation <span class="string">'androidx.camera:camera-camera2:1.4.2'</span>
-<span class="caretline"><span class="lineno"> 28 </span>    implementation <span class="warning"><span class="string">'androidx.camera:camera-lifecycle:1.4.2'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="caretline"><span class="lineno"> 28 </span>    implementation <span class="warning"><span class="string">'androidx.camera:camera-lifecycle:1.4.2'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 <span class="lineno"> 29 </span>    implementation <span class="string">'androidx.camera:camera-view:1.4.2'</span>
 <span class="lineno"> 30 </span>    implementation <span class="string">'net.java.dev.jna:jna:5.17.0@aar'</span>
-<span class="lineno"> 31 </span>    testImplementation <span class="string">'junit:junit:4.13.2'</span></pre>
+<span class="lineno"> 31 </span>    testImplementation <span class="string">'junit:junit:4.13.2'</span>
+</pre>
 
 <span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/build.gradle">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\build.gradle</a>:29</span>: <span class="message">A newer version of androidx.camera:camera-view than 1.4.2 is available: 1.6.2</span><br /><pre class="errorlines">
 <span class="lineno"> 26 </span>    implementation <span class="string">'androidx.activity:activity:1.10.1'</span>
 <span class="lineno"> 27 </span>    implementation <span class="string">'androidx.camera:camera-camera2:1.4.2'</span>
 <span class="lineno"> 28 </span>    implementation <span class="string">'androidx.camera:camera-lifecycle:1.4.2'</span>
-<span class="caretline"><span class="lineno"> 29 </span>    implementation <span class="warning"><span class="string">'androidx.camera:camera-view:1.4.2'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="caretline"><span class="lineno"> 29 </span>    implementation <span class="warning"><span class="string">'androidx.camera:camera-view:1.4.2'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 <span class="lineno"> 30 </span>    implementation <span class="string">'net.java.dev.jna:jna:5.17.0@aar'</span>
 <span class="lineno"> 31 </span>    testImplementation <span class="string">'junit:junit:4.13.2'</span>
-<span class="lineno"> 32 </span>    androidTestImplementation <span class="string">'androidx.test:runner:1.6.2'</span></pre>
+<span class="lineno"> 32 </span>    androidTestImplementation <span class="string">'androidx.test:runner:1.6.2'</span>
+</pre>
 
 <span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/build.gradle">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\build.gradle</a>:32</span>: <span class="message">A newer version of androidx.test:runner than 1.6.2 is available: 1.7.0</span><br /><pre class="errorlines">
 <span class="lineno"> 29 </span>    implementation <span class="string">'androidx.camera:camera-view:1.4.2'</span>
 <span class="lineno"> 30 </span>    implementation <span class="string">'net.java.dev.jna:jna:5.17.0@aar'</span>
 <span class="lineno"> 31 </span>    testImplementation <span class="string">'junit:junit:4.13.2'</span>
-<span class="caretline"><span class="lineno"> 32 </span>    androidTestImplementation <span class="warning"><span class="string">'androidx.test:runner:1.6.2'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="caretline"><span class="lineno"> 32 </span>    androidTestImplementation <span class="warning"><span class="string">'androidx.test:runner:1.6.2'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 <span class="lineno"> 33 </span>    androidTestImplementation <span class="string">'androidx.test.ext:junit:1.2.1'</span>
 <span class="lineno"> 34 </span>    androidTestImplementation <span class="string">'androidx.test:core:1.6.1'</span>
 <span class="lineno"> 35 </span>}
@@ -408,7 +419,7 @@ Dismiss</button>            </div>
 <span class="lineno"> 30 </span>    implementation <span class="string">'net.java.dev.jna:jna:5.17.0@aar'</span>
 <span class="lineno"> 31 </span>    testImplementation <span class="string">'junit:junit:4.13.2'</span>
 <span class="lineno"> 32 </span>    androidTestImplementation <span class="string">'androidx.test:runner:1.6.2'</span>
-<span class="caretline"><span class="lineno"> 33 </span>    androidTestImplementation <span class="warning"><span class="string">'androidx.test.ext:junit:1.2.1'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="caretline"><span class="lineno"> 33 </span>    androidTestImplementation <span class="warning"><span class="string">'androidx.test.ext:junit:1.2.1'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 <span class="lineno"> 34 </span>    androidTestImplementation <span class="string">'androidx.test:core:1.6.1'</span>
 <span class="lineno"> 35 </span>}
 </pre>
@@ -417,7 +428,7 @@ Dismiss</button>            </div>
 <span class="lineno"> 31 </span>    testImplementation <span class="string">'junit:junit:4.13.2'</span>
 <span class="lineno"> 32 </span>    androidTestImplementation <span class="string">'androidx.test:runner:1.6.2'</span>
 <span class="lineno"> 33 </span>    androidTestImplementation <span class="string">'androidx.test.ext:junit:1.2.1'</span>
-<span class="caretline"><span class="lineno"> 34 </span>    androidTestImplementation <span class="warning"><span class="string">'androidx.test:core:1.6.1'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="caretline"><span class="lineno"> 34 </span>    androidTestImplementation <span class="warning"><span class="string">'androidx.test:core:1.6.1'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 <span class="lineno"> 35 </span>}
 </pre>
 
@@ -457,14 +468,14 @@ Dismiss</button>            </div>
               <div class="mdl-card__supporting-text">
 <div class="issue">
 <div class="warningslist">
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/AndroidManifest.xml">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml</a>:12</span>: <span class="message">Expecting <code>android:screenOrientation="unspecified"</code> or <code>"fullSensor"</code> for this activity so the user can use the application in any orientation and provide a great experience on Chrome OS devices</span><br /><pre class="errorlines">
-<span class="lineno">  9 </span>  <span class="tag">&lt;uses-feature</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.hardware.camera.any"</span> <span class="prefix">android:</span><span class="attribute">required</span>=<span class="value">"true"</span> />
-<span class="lineno"> 10 </span>  <span class="tag">&lt;application</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">theme</span>=<span class="value">"@style/AppTheme"</span> <span class="prefix">android:</span><span class="attribute">label</span>=<span class="value">"abismoCam"</span>
-<span class="lineno"> 11 </span>      <span class="prefix">android:</span><span class="attribute">icon</span>=<span class="value">"@drawable/ic_app"</span> <span class="prefix">android:</span><span class="attribute">allowBackup</span>=<span class="value">"false"</span> <span class="prefix">android:</span><span class="attribute">supportsRtl</span>=<span class="value">"true"</span>>
-<span class="caretline"><span class="lineno"> 12 </span>      <span class="tag">&lt;activity</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">".MainActivity"</span> <span class="prefix">android:</span><span class="attribute">exported</span>=<span class="value">"true"</span> <span class="warning"><span class="prefix">android:</span><span class="attribute">screenOrientation</span>=<span class="value">"portrait"</span></span>></span>
-<span class="lineno"> 13 </span>          <span class="tag">&lt;intent-filter></span>
-<span class="lineno"> 14 </span>              <span class="tag">&lt;action</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.intent.action.MAIN"</span> />
-<span class="lineno"> 15 </span>              <span class="tag">&lt;category</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.intent.category.LAUNCHER"</span> />
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/AndroidManifest.xml">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml</a>:18</span>: <span class="message">Expecting <code>android:screenOrientation="unspecified"</code> or <code>"fullSensor"</code> for this activity so the user can use the application in any orientation and provide a great experience on Chrome OS devices</span><br /><pre class="errorlines">
+<span class="lineno"> 15 </span>  <span class="prefix">android:</span><span class="attribute">icon</span>=<span class="value">"@drawable/ic_app"</span> <span class="prefix">android:</span><span class="attribute">allowBackup</span>=<span class="value">"false"</span> <span class="prefix">android:</span><span class="attribute">supportsRtl</span>=<span class="value">"true"</span>>
+<span class="lineno"> 16 </span>  <span class="tag">&lt;service</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">".TransmissionService"</span> <span class="prefix">android:</span><span class="attribute">exported</span>=<span class="value">"false"</span>
+<span class="lineno"> 17 </span>      <span class="prefix">android:</span><span class="attribute">foregroundServiceType</span>=<span class="value">"camera"</span> <span class="prefix">android:</span><span class="attribute">stopWithTask</span>=<span class="value">"false"</span> />
+<span class="caretline"><span class="lineno"> 18 </span>  <span class="tag">&lt;activity</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">".MainActivity"</span> <span class="prefix">android:</span><span class="attribute">exported</span>=<span class="value">"true"</span> <span class="warning"><span class="prefix">android:</span><span class="attribute">screenOrientation</span>=<span class="value">"portrait"</span></span>></span>
+<span class="lineno"> 19 </span>      <span class="tag">&lt;intent-filter></span>
+<span class="lineno"> 20 </span>          <span class="tag">&lt;action</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.intent.action.MAIN"</span> />
+<span class="lineno"> 21 </span>          <span class="tag">&lt;category</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.intent.category.LAUNCHER"</span> />
 </pre>
 
 </div>
@@ -508,10 +519,11 @@ Dismiss</button>            </div>
 <span class="lineno"> 27 </span>    implementation <span class="string">'androidx.camera:camera-camera2:1.4.2'</span>
 <span class="lineno"> 28 </span>    implementation <span class="string">'androidx.camera:camera-lifecycle:1.4.2'</span>
 <span class="lineno"> 29 </span>    implementation <span class="string">'androidx.camera:camera-view:1.4.2'</span>
-<span class="caretline"><span class="lineno"> 30 </span>    implementation <span class="warning"><span class="string">'net.java.dev.jna:jna:5.17.0@aar'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="caretline"><span class="lineno"> 30 </span>    implementation <span class="warning"><span class="string">'net.java.dev.jna:jna:5.17.0@aar'</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 <span class="lineno"> 31 </span>    testImplementation <span class="string">'junit:junit:4.13.2'</span>
 <span class="lineno"> 32 </span>    androidTestImplementation <span class="string">'androidx.test:runner:1.6.2'</span>
-<span class="lineno"> 33 </span>    androidTestImplementation <span class="string">'androidx.test.ext:junit:1.2.1'</span></pre>
+<span class="lineno"> 33 </span>    androidTestImplementation <span class="string">'androidx.test.ext:junit:1.2.1'</span>
+</pre>
 
 </div>
 <div class="metadata"><div class="explanation" id="explanationNewerVersionAvailable" style="display: none;">
@@ -549,14 +561,14 @@ Dismiss</button>            </div>
               <div class="mdl-card__supporting-text">
 <div class="issue">
 <div class="warningslist">
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/AndroidManifest.xml">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml</a>:12</span>: <span class="message">Fixed screen orientations will be ignored in most cases, starting from Android 16. Android is moving toward a model where apps are expected to adapt to various orientations, display sizes, and aspect ratios.</span><br /><pre class="errorlines">
-<span class="lineno">  9 </span>  <span class="tag">&lt;uses-feature</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.hardware.camera.any"</span> <span class="prefix">android:</span><span class="attribute">required</span>=<span class="value">"true"</span> />
-<span class="lineno"> 10 </span>  <span class="tag">&lt;application</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">theme</span>=<span class="value">"@style/AppTheme"</span> <span class="prefix">android:</span><span class="attribute">label</span>=<span class="value">"abismoCam"</span>
-<span class="lineno"> 11 </span>      <span class="prefix">android:</span><span class="attribute">icon</span>=<span class="value">"@drawable/ic_app"</span> <span class="prefix">android:</span><span class="attribute">allowBackup</span>=<span class="value">"false"</span> <span class="prefix">android:</span><span class="attribute">supportsRtl</span>=<span class="value">"true"</span>>
-<span class="caretline"><span class="lineno"> 12 </span>      <span class="tag">&lt;activity</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">".MainActivity"</span> <span class="prefix">android:</span><span class="attribute">exported</span>=<span class="value">"true"</span> <span class="warning"><span class="prefix">android:</span><span class="attribute">screenOrientation</span>=<span class="value">"portrait"</span></span>></span>
-<span class="lineno"> 13 </span>          <span class="tag">&lt;intent-filter></span>
-<span class="lineno"> 14 </span>              <span class="tag">&lt;action</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.intent.action.MAIN"</span> />
-<span class="lineno"> 15 </span>              <span class="tag">&lt;category</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.intent.category.LAUNCHER"</span> />
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/AndroidManifest.xml">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml</a>:18</span>: <span class="message">Fixed screen orientations will be ignored in most cases, starting from Android 16. Android is moving toward a model where apps are expected to adapt to various orientations, display sizes, and aspect ratios.</span><br /><pre class="errorlines">
+<span class="lineno"> 15 </span>  <span class="prefix">android:</span><span class="attribute">icon</span>=<span class="value">"@drawable/ic_app"</span> <span class="prefix">android:</span><span class="attribute">allowBackup</span>=<span class="value">"false"</span> <span class="prefix">android:</span><span class="attribute">supportsRtl</span>=<span class="value">"true"</span>>
+<span class="lineno"> 16 </span>  <span class="tag">&lt;service</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">".TransmissionService"</span> <span class="prefix">android:</span><span class="attribute">exported</span>=<span class="value">"false"</span>
+<span class="lineno"> 17 </span>      <span class="prefix">android:</span><span class="attribute">foregroundServiceType</span>=<span class="value">"camera"</span> <span class="prefix">android:</span><span class="attribute">stopWithTask</span>=<span class="value">"false"</span> />
+<span class="caretline"><span class="lineno"> 18 </span>  <span class="tag">&lt;activity</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">".MainActivity"</span> <span class="prefix">android:</span><span class="attribute">exported</span>=<span class="value">"true"</span> <span class="warning"><span class="prefix">android:</span><span class="attribute">screenOrientation</span>=<span class="value">"portrait"</span></span>></span>
+<span class="lineno"> 19 </span>      <span class="tag">&lt;intent-filter></span>
+<span class="lineno"> 20 </span>          <span class="tag">&lt;action</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.intent.action.MAIN"</span> />
+<span class="lineno"> 21 </span>          <span class="tag">&lt;category</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.intent.category.LAUNCHER"</span> />
 </pre>
 
 </div>
@@ -596,14 +608,14 @@ Dismiss</button>            </div>
               <div class="mdl-card__supporting-text">
 <div class="issue">
 <div class="warningslist">
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/AndroidManifest.xml">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml</a>:11</span>: <span class="message">The attribute <code>android:allowBackup</code> is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute <code>android:dataExtractionRules</code> specifying an <code>@xml</code> resource which configures cloud backups and device transfers on Android 12 and higher.</span><br /><pre class="errorlines">
-<span class="lineno">  8 </span>  <span class="tag">&lt;uses-permission</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.permission.CHANGE_WIFI_MULTICAST_STATE"</span> />
-<span class="lineno">  9 </span>  <span class="tag">&lt;uses-feature</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.hardware.camera.any"</span> <span class="prefix">android:</span><span class="attribute">required</span>=<span class="value">"true"</span> />
-<span class="lineno"> 10 </span>  <span class="tag">&lt;application</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">theme</span>=<span class="value">"@style/AppTheme"</span> <span class="prefix">android:</span><span class="attribute">label</span>=<span class="value">"abismoCam"</span>
-<span class="caretline"><span class="lineno"> 11 </span>      <span class="prefix">android:</span><span class="attribute">icon</span>=<span class="value">"@drawable/ic_app"</span> <span class="prefix">android:</span><span class="attribute">allowBackup</span>=<span class="value">"</span><span class="warning"><span class="value">false</span></span><span class="value">"</span> <span class="prefix">android:</span><span class="attribute">supportsRtl</span>=<span class="value">"true"</span>>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-<span class="lineno"> 12 </span>      <span class="tag">&lt;activity</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">".MainActivity"</span> <span class="prefix">android:</span><span class="attribute">exported</span>=<span class="value">"true"</span> <span class="prefix">android:</span><span class="attribute">screenOrientation</span>=<span class="value">"portrait"</span>>
-<span class="lineno"> 13 </span>          <span class="tag">&lt;intent-filter></span>
-<span class="lineno"> 14 </span>              <span class="tag">&lt;action</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.intent.action.MAIN"</span> />
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/AndroidManifest.xml">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml</a>:15</span>: <span class="message">The attribute <code>android:allowBackup</code> is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute <code>android:dataExtractionRules</code> specifying an <code>@xml</code> resource which configures cloud backups and device transfers on Android 12 and higher.</span><br /><pre class="errorlines">
+<span class="lineno"> 12 </span>  <span class="tag">&lt;uses-permission</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.permission.CHANGE_WIFI_MULTICAST_STATE"</span> />
+<span class="lineno"> 13 </span>  <span class="tag">&lt;uses-feature</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">"android.hardware.camera.any"</span> <span class="prefix">android:</span><span class="attribute">required</span>=<span class="value">"true"</span> />
+<span class="lineno"> 14 </span>  <span class="tag">&lt;application</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">theme</span>=<span class="value">"@style/AppTheme"</span> <span class="prefix">android:</span><span class="attribute">label</span>=<span class="value">"abismoCam"</span>
+<span class="caretline"><span class="lineno"> 15 </span>      <span class="prefix">android:</span><span class="attribute">icon</span>=<span class="value">"@drawable/ic_app"</span> <span class="prefix">android:</span><span class="attribute">allowBackup</span>=<span class="value">"</span><span class="warning"><span class="value">false</span></span><span class="value">"</span> <span class="prefix">android:</span><span class="attribute">supportsRtl</span>=<span class="value">"true"</span>>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="lineno"> 16 </span>      <span class="tag">&lt;service</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">".TransmissionService"</span> <span class="prefix">android:</span><span class="attribute">exported</span>=<span class="value">"false"</span>
+<span class="lineno"> 17 </span>          <span class="prefix">android:</span><span class="attribute">foregroundServiceType</span>=<span class="value">"camera"</span> <span class="prefix">android:</span><span class="attribute">stopWithTask</span>=<span class="value">"false"</span> />
+<span class="lineno"> 18 </span>      <span class="tag">&lt;activity</span><span class="attribute"> </span><span class="prefix">android:</span><span class="attribute">name</span>=<span class="value">".MainActivity"</span> <span class="prefix">android:</span><span class="attribute">exported</span>=<span class="value">"true"</span> <span class="prefix">android:</span><span class="attribute">screenOrientation</span>=<span class="value">"portrait"</span>>
 </pre>
 
 </div>
@@ -638,6 +650,54 @@ Explain</button><button class="mdl-button mdl-js-button mdl-js-ripple-effect" id
 Dismiss</button>            </div>
             </div>
           </section>
+<a name="Performance"></a>
+<a name="WakelockTimeout"></a>
+<section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp" id="WakelockTimeoutCard" style="display: block;">
+            <div class="mdl-card mdl-cell mdl-cell--12-col">
+  <div class="mdl-card__title">
+    <h2 class="mdl-card__title-text">Using wakeLock without timeout</h2>
+  </div>
+              <div class="mdl-card__supporting-text">
+<div class="issue">
+<div class="warningslist">
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/TransmissionService.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\TransmissionService.java</a>:97</span>: <span class="message">Provide a timeout when requesting a wakelock with <code>PowerManager.Wakelock.acquire(long timeout)</code>. This will ensure the OS will cleanup any wakelocks that last longer than you intend, and will save your user's battery.</span><br /><pre class="errorlines">
+<span class="lineno">  94 </span>  <span class="keyword">else</span> startForeground(<span class="number">1</span>, notification());
+<span class="lineno">  95 </span>  <span class="keyword">if</span> (wakeLock == <span class="keyword">null</span>) {
+<span class="lineno">  96 </span>      wakeLock = getSystemService(PowerManager.<span class="keyword">class</span>).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, <span class="string">"abismoCam:transmission"</span>);
+<span class="caretline"><span class="lineno">  97 </span>      <span class="warning">wakeLock.acquire()</span>;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="lineno">  98 </span>      WifiManager wifi = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
+<span class="lineno">  99 </span>      <span class="keyword">if</span> (wifi != <span class="keyword">null</span>) {
+<span class="lineno"> 100 </span>          wifiLock = wifi.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, <span class="string">"abismoCam:stream"</span>);
+</pre>
+
+</div>
+<div class="metadata"><div class="explanation" id="explanationWakelockTimeout" style="display: none;">
+Wakelocks have two acquire methods: one with a timeout, and one without. You should generally always use the one with a timeout. A typical timeout is 10 minutes. If the task takes longer than it is critical that it happens (i.e. can't use <code>JobScheduler</code>) then maybe they should consider a foreground service instead (which is a stronger run guarantee and lets the user know something long/important is happening).<br/>Note: This issue has an associated quickfix operation in Android Studio and IntelliJ IDEA.<br>
+To suppress this error, use the issue id "WakelockTimeout" as explained in the <a href="#SuppressInfo">Suppressing Warnings and Errors</a> section.<br/>
+<br/></div>
+</div>
+</div>
+<div class="chips">
+<span class="mdl-chip">
+    <span class="mdl-chip__text">WakelockTimeout</span>
+</span>
+<span class="mdl-chip">
+    <span class="mdl-chip__text">Performance</span>
+</span>
+<span class="mdl-chip">
+    <span class="mdl-chip__text">Warning</span>
+</span>
+<span class="mdl-chip">
+    <span class="mdl-chip__text">Priority 9/10</span>
+</span>
+</div>
+              </div>
+              <div class="mdl-card__actions mdl-card--border">
+<button class="mdl-button mdl-js-button mdl-js-ripple-effect" id="explanationWakelockTimeoutLink" onclick="reveal('explanationWakelockTimeout');">
+Explain</button><button class="mdl-button mdl-js-button mdl-js-ripple-effect" id="WakelockTimeoutCardLink" onclick="hideid('WakelockTimeoutCard');">
+Dismiss</button>            </div>
+            </div>
+          </section>
 <a name="Accessibility"></a>
 <a name="ClickableViewAccessibility"></a>
 <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp" id="ClickableViewAccessibilityCard" style="display: block;">
@@ -648,24 +708,24 @@ Dismiss</button>            </div>
               <div class="mdl-card__supporting-text">
 <div class="issue">
 <div class="warningslist">
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:252</span>: <span class="message">Custom view `<code>ImageButton</code>` has <code>setOnTouchListener</code> called on it but does not override <code>performClick</code></span><br /><pre class="errorlines">
-<span class="lineno"> 249 </span>        settingsButton.setContentDescription(<span class="string">"Ajustes: mantener pulsado 3 segundos"</span>);
-<span class="lineno"> 250 </span>        settingsButton.setPadding(dp(<span class="number">12</span>), dp(<span class="number">12</span>), dp(<span class="number">12</span>), dp(<span class="number">12</span>));
-<span class="lineno"> 251 </span>        settingsButton.setBackground(background(<span class="number">0x33000000</span>, <span class="number">24</span>));
-<span class="caretline"><span class="lineno"> 252 </span>        <span class="warning">settingsButton.setOnTouchListener((v, event) -> {</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-<span class="lineno"> 253 </span>            <span class="keyword">if</span> (event.getActionMasked() == MotionEvent.ACTION_DOWN &amp;&amp; v.isEnabled()) {
-<span class="lineno"> 254 </span>                main.removeCallbacks(openSettings);
-<span class="lineno"> 255 </span>                main.postDelayed(openSettings, <span class="number">3000</span>);
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:217</span>: <span class="message">Custom view `<code>ImageButton</code>` has <code>setOnTouchListener</code> called on it but does not override <code>performClick</code></span><br /><pre class="errorlines">
+<span class="lineno"> 214 </span>        settingsButton.setContentDescription(<span class="string">"Ajustes: mantener pulsado 3 segundos"</span>);
+<span class="lineno"> 215 </span>        settingsButton.setPadding(dp(<span class="number">12</span>), dp(<span class="number">12</span>), dp(<span class="number">12</span>), dp(<span class="number">12</span>));
+<span class="lineno"> 216 </span>        settingsButton.setBackground(background(<span class="number">0x33000000</span>, <span class="number">24</span>));
+<span class="caretline"><span class="lineno"> 217 </span>        <span class="warning">settingsButton.setOnTouchListener((v, event) -> {</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="lineno"> 218 </span>            <span class="keyword">if</span> (event.getActionMasked() == MotionEvent.ACTION_DOWN &amp;&amp; v.isEnabled()) {
+<span class="lineno"> 219 </span>                main.removeCallbacks(openSettings);
+<span class="lineno"> 220 </span>                main.postDelayed(openSettings, <span class="number">3000</span>);
 </pre>
 
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:252</span>: <span class="message"><code>onTouch</code> lambda should call <code>View#performClick</code> when a click is detected</span><br /><pre class="errorlines">
-<span class="lineno"> 249 </span>        settingsButton.setContentDescription(<span class="string">"Ajustes: mantener pulsado 3 segundos"</span>);
-<span class="lineno"> 250 </span>        settingsButton.setPadding(dp(<span class="number">12</span>), dp(<span class="number">12</span>), dp(<span class="number">12</span>), dp(<span class="number">12</span>));
-<span class="lineno"> 251 </span>        settingsButton.setBackground(background(<span class="number">0x33000000</span>, <span class="number">24</span>));
-<span class="caretline"><span class="lineno"> 252 </span>        settingsButton.setOnTouchListener(<span class="warning">(v, event) -> {</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-<span class="lineno"> 253 </span>            <span class="keyword">if</span> (event.getActionMasked() == MotionEvent.ACTION_DOWN &amp;&amp; v.isEnabled()) {
-<span class="lineno"> 254 </span>                main.removeCallbacks(openSettings);
-<span class="lineno"> 255 </span>                main.postDelayed(openSettings, <span class="number">3000</span>);
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:217</span>: <span class="message"><code>onTouch</code> lambda should call <code>View#performClick</code> when a click is detected</span><br /><pre class="errorlines">
+<span class="lineno"> 214 </span>        settingsButton.setContentDescription(<span class="string">"Ajustes: mantener pulsado 3 segundos"</span>);
+<span class="lineno"> 215 </span>        settingsButton.setPadding(dp(<span class="number">12</span>), dp(<span class="number">12</span>), dp(<span class="number">12</span>), dp(<span class="number">12</span>));
+<span class="lineno"> 216 </span>        settingsButton.setBackground(background(<span class="number">0x33000000</span>, <span class="number">24</span>));
+<span class="caretline"><span class="lineno"> 217 </span>        settingsButton.setOnTouchListener(<span class="warning">(v, event) -> {</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="lineno"> 218 </span>            <span class="keyword">if</span> (event.getActionMasked() == MotionEvent.ACTION_DOWN &amp;&amp; v.isEnabled()) {
+<span class="lineno"> 219 </span>                main.removeCallbacks(openSettings);
+<span class="lineno"> 220 </span>                main.postDelayed(openSettings, <span class="number">3000</span>);
 </pre>
 
 </div>
@@ -705,116 +765,106 @@ Dismiss</button>            </div>
               <div class="mdl-card__supporting-text">
 <div class="issue">
 <div class="warningslist">
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:97</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
-<span class="lineno">  94 </span>            <span class="keyword">if</span> (seconds > <span class="number">0</span>) {
-<span class="lineno">  95 </span>                countdown.setScaleX(<span class="number">1.12f</span>); countdown.setScaleY(<span class="number">1.12f</span>);
-<span class="lineno">  96 </span>                countdown.animate().scaleX(<span class="number">1f</span>).scaleY(<span class="number">1f</span>).setDuration(<span class="number">180</span>).start();
-<span class="caretline"><span class="lineno">  97 </span>                captureStatus.setText(<span class="warning"><span class="string">"Prepará tu foto"</span></span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-<span class="lineno">  98 </span>            }
-<span class="lineno">  99 </span>        }
-<span class="lineno"> 100 </span>        <span class="annotation">@Override</span> <span class="keyword">public</span> <span class="keyword">void</span> onCapture() {
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:74</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
+<span class="lineno">  71 </span>            <span class="keyword">if</span> (seconds > <span class="number">0</span>) {
+<span class="lineno">  72 </span>                countdown.setScaleX(<span class="number">1.12f</span>); countdown.setScaleY(<span class="number">1.12f</span>);
+<span class="lineno">  73 </span>                countdown.animate().scaleX(<span class="number">1f</span>).scaleY(<span class="number">1f</span>).setDuration(<span class="number">180</span>).start();
+<span class="caretline"><span class="lineno">  74 </span>                captureStatus.setText(<span class="warning"><span class="string">"Prepará tu foto"</span></span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="lineno">  75 </span>            }
+<span class="lineno">  76 </span>        }
+<span class="lineno">  77 </span>        <span class="annotation">@Override</span> <span class="keyword">public</span> <span class="keyword">void</span> onCapture() {
 </pre>
 
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:102</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
-<span class="lineno">  99 </span>        }
-<span class="lineno"> 100 </span>        <span class="annotation">@Override</span> <span class="keyword">public</span> <span class="keyword">void</span> onCapture() {
-<span class="lineno"> 101 </span>            android.util.Log.d(<span class="string">"AbismoCapture"</span>, <span class="string">"request "</span> + captureGeneration);
-<span class="caretline"><span class="lineno"> 102 </span>            captureStatus.setText(<span class="warning"><span class="string">"Capturando…"</span></span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-<span class="lineno"> 103 </span>            pendingCapture.set(<span class="keyword">new</span> CaptureRequest(captureGeneration, config.frontCamera));
-<span class="lineno"> 104 </span>        }
-<span class="lineno"> 105 </span>        <span class="annotation">@Override</span> <span class="keyword">public</span> <span class="keyword">void</span> onLive() { restoreLiveView(); }
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:79</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
+<span class="lineno">  76 </span>  }
+<span class="lineno">  77 </span>  <span class="annotation">@Override</span> <span class="keyword">public</span> <span class="keyword">void</span> onCapture() {
+<span class="lineno">  78 </span>      android.util.Log.d(<span class="string">"AbismoCapture"</span>, <span class="string">"request "</span> + captureGeneration);
+<span class="caretline"><span class="lineno">  79 </span>      captureStatus.setText(<span class="warning"><span class="string">"Capturando…"</span></span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="lineno">  80 </span>      <span class="keyword">final</span> <span class="keyword">int</span> generation = captureGeneration;
+<span class="lineno">  81 </span>      <span class="keyword">if</span> (transmission != <span class="keyword">null</span>) transmission.capture(config.frontCamera, <span class="keyword">new</span> TransmissionService.PhotoCallback() {
+<span class="lineno">  82 </span>          <span class="annotation">@Override</span> <span class="keyword">public</span> <span class="keyword">void</span> ready(Bitmap photo) { acceptSnapshot(generation, photo); }
 </pre>
 
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:161</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
-<span class="lineno"> 158 </span>  <span class="keyword">private</span> <span class="keyword">final</span> ActivityResultLauncher&lt;String> cameraPermission = registerForActivityResult(
-<span class="lineno"> 159 </span>      <span class="keyword">new</span> ActivityResultContracts.RequestPermission(), granted -> {
-<span class="lineno"> 160 </span>          <span class="keyword">if</span> (granted &amp;&amp; !settingsVisible) bindCamera();
-<span class="caretline"><span class="lineno"> 161 </span>          <span class="keyword">else</span> <span class="keyword">if</span> (!granted &amp;&amp; cameraStatus != <span class="keyword">null</span>) cameraStatus.setText(<span class="warning"><span class="string">"Cámara sin permiso · tocá aquí para habilitarla"</span></span>);</span>
-<span class="lineno"> 162 </span>      });
-<span class="lineno"> 163 </span>
-<span class="lineno"> 164 </span>  <span class="annotation">@Override</span> <span class="keyword">public</span> <span class="keyword">void</span> onCreate(Bundle state) {
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:131</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
+<span class="lineno"> 128 </span>  <span class="keyword">private</span> <span class="keyword">final</span> ActivityResultLauncher&lt;String> cameraPermission = registerForActivityResult(
+<span class="lineno"> 129 </span>      <span class="keyword">new</span> ActivityResultContracts.RequestPermission(), granted -> {
+<span class="lineno"> 130 </span>          <span class="keyword">if</span> (granted &amp;&amp; !settingsVisible) bindCamera();
+<span class="caretline"><span class="lineno"> 131 </span>          <span class="keyword">else</span> <span class="keyword">if</span> (!granted &amp;&amp; cameraStatus != <span class="keyword">null</span>) cameraStatus.setText(<span class="warning"><span class="string">"Cámara sin permiso · tocá aquí para habilitarla"</span></span>);</span>
+<span class="lineno"> 132 </span>      });
+<span class="lineno"> 133 </span>
+<span class="lineno"> 134 </span>  <span class="annotation">@Override</span> <span class="keyword">public</span> <span class="keyword">void</span> onCreate(Bundle state) {
 </pre>
 
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:364</span>: <span class="message">Do not concatenate text displayed with <code>setText</code>. Use resource string with placeholders.</span><br /><pre class="errorlines">
-<span class="lineno"> 361 </span>      CameraSelector selector = config.frontCamera ? CameraSelector.DEFAULT_FRONT_CAMERA : CameraSelector.DEFAULT_BACK_CAMERA;
-<span class="lineno"> 362 </span>      cameraProvider.bindToLifecycle(<span class="keyword">this</span>, selector, preview, analysis);
-<span class="lineno"> 363 </span>      cameraReady = <span class="keyword">true</span>;
-<span class="caretline"><span class="lineno"> 364 </span>      cameraStatus.setText(<span class="warning">(config.frontCamera ? <span class="string">"Frontal"</span> : <span class="string">"Trasera"</span>) + <span class="string">" · vista previa · sin audio"</span></span>);</span>
-<span class="lineno"> 365 </span>      <span class="keyword">if</span> (resumed &amp;&amp; ndiWanted &amp;&amp; !streaming &amp;&amp; !starting) startNdi();
-<span class="lineno"> 366 </span>  } <span class="keyword">catch</span> (Exception failure) {
-<span class="lineno"> 367 </span>      cameraStatus.setText(<span class="string">"No se pudo abrir la cámara. Tocá para reintentar."</span>);
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:337</span>: <span class="message">Do not concatenate text displayed with <code>setText</code>. Use resource string with placeholders.</span><br /><pre class="errorlines">
+<span class="lineno"> 334 </span>          serviceBound = bindService(service, serviceConnection, BIND_AUTO_CREATE);
+<span class="lineno"> 335 </span>          <span class="keyword">if</span> (Build.VERSION.SDK_INT >= <span class="number">33</span> &amp;&amp; checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
+<span class="lineno"> 336 </span>              notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
+<span class="caretline"><span class="lineno"> 337 </span>      } <span class="keyword">catch</span> (RuntimeException error) { cameraStatus.setText(<span class="warning"><span class="string">"No se pudo iniciar la cámara: "</span> + error.getMessage()</span>); }</span>
+<span class="lineno"> 338 </span>  }
+<span class="lineno"> 339 </span>
+<span class="lineno"> 340 </span>  <span class="keyword">private</span> <span class="keyword">void</span> refreshTransmission() {
 </pre>
 
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:364</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
-<span class="lineno"> 361 </span>      CameraSelector selector = config.frontCamera ? CameraSelector.DEFAULT_FRONT_CAMERA : CameraSelector.DEFAULT_BACK_CAMERA;
-<span class="lineno"> 362 </span>      cameraProvider.bindToLifecycle(<span class="keyword">this</span>, selector, preview, analysis);
-<span class="lineno"> 363 </span>      cameraReady = <span class="keyword">true</span>;
-<span class="caretline"><span class="lineno"> 364 </span>      cameraStatus.setText((config.frontCamera ? <span class="string">"Frontal"</span> : <span class="string">"Trasera"</span>) + <span class="warning"><span class="string">" · vista previa · sin audio"</span></span>);</span>
-<span class="lineno"> 365 </span>      <span class="keyword">if</span> (resumed &amp;&amp; ndiWanted &amp;&amp; !streaming &amp;&amp; !starting) startNdi();
-<span class="lineno"> 366 </span>  } <span class="keyword">catch</span> (Exception failure) {
-<span class="lineno"> 367 </span>      cameraStatus.setText(<span class="string">"No se pudo abrir la cámara. Tocá para reintentar."</span>);
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:337</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
+<span class="lineno"> 334 </span>          serviceBound = bindService(service, serviceConnection, BIND_AUTO_CREATE);
+<span class="lineno"> 335 </span>          <span class="keyword">if</span> (Build.VERSION.SDK_INT >= <span class="number">33</span> &amp;&amp; checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
+<span class="lineno"> 336 </span>              notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
+<span class="caretline"><span class="lineno"> 337 </span>      } <span class="keyword">catch</span> (RuntimeException error) { cameraStatus.setText(<span class="warning"><span class="string">"No se pudo iniciar la cámara: "</span></span> + error.getMessage()); }</span>
+<span class="lineno"> 338 </span>  }
+<span class="lineno"> 339 </span>
+<span class="lineno"> 340 </span>  <span class="keyword">private</span> <span class="keyword">void</span> refreshTransmission() {
 </pre>
 
-<button class="mdl-button mdl-js-button mdl-button--primary" id="SetTextI18nDivLink" onclick="reveal('SetTextI18nDiv');" />+ 6 More Occurrences...</button>
+<button class="mdl-button mdl-js-button mdl-button--primary" id="SetTextI18nDivLink" onclick="reveal('SetTextI18nDiv');" />+ 5 More Occurrences...</button>
 <div id="SetTextI18nDiv" style="display: none">
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:367</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
-<span class="lineno"> 364 </span>          cameraStatus.setText((config.frontCamera ? <span class="string">"Frontal"</span> : <span class="string">"Trasera"</span>) + <span class="string">" · vista previa · sin audio"</span>);
-<span class="lineno"> 365 </span>          <span class="keyword">if</span> (resumed &amp;&amp; ndiWanted &amp;&amp; !streaming &amp;&amp; !starting) startNdi();
-<span class="lineno"> 366 </span>      } <span class="keyword">catch</span> (Exception failure) {
-<span class="caretline"><span class="lineno"> 367 </span>          cameraStatus.setText(<span class="warning"><span class="string">"No se pudo abrir la cámara. Tocá para reintentar."</span></span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-<span class="lineno"> 368 </span>          toast(<span class="string">"Cámara: "</span> + failure.getMessage());
-<span class="lineno"> 369 </span>      }
-<span class="lineno"> 370 </span>  }, ContextCompat.getMainExecutor(<span class="keyword">this</span>));
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:403</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
+<span class="lineno"> 400 </span>  <span class="keyword">if</span> (!sequence.frameReady(SystemClock.elapsedRealtime())) <span class="keyword">return</span>;
+<span class="lineno"> 401 </span>  frozenFrame.setImageBitmap(photo);
+<span class="lineno"> 402 </span>  frozenFrame.setVisibility(View.VISIBLE);
+<span class="caretline"><span class="lineno"> 403 </span>  captureStatus.setText(<span class="warning"><span class="string">"Guardando foto…"</span></span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="lineno"> 404 </span>  flash.animate().cancel();
+<span class="lineno"> 405 </span>  flash.setAlpha(<span class="number">1f</span>); flash.setVisibility(View.VISIBLE);
+<span class="lineno"> 406 </span>  flash.animate().alpha(<span class="number">0f</span>).setDuration(CaptureSequence.FLASH_MS).withEndAction(() -> flash.setVisibility(View.GONE)).start();
 </pre>
 
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:486</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
-<span class="lineno"> 483 </span>          frameCount = <span class="number">0</span>;
-<span class="lineno"> 484 </span>          statsStartMs = SystemClock.elapsedRealtime();
-<span class="lineno"> 485 </span>          streaming = <span class="keyword">true</span>;
-<span class="caretline"><span class="lineno"> 486 </span>          <span class="keyword">if</span> (streamButton != <span class="keyword">null</span>) streamButton.setText(<span class="warning"><span class="string">"Detener NDI"</span></span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-<span class="lineno"> 487 </span>          setNdiMessage(<span class="string">"● NDI activo · "</span> + (multicast ? <span class="string">"Multicast habilitado"</span> : <span class="string">"Unicast"</span>) + <span class="string">"\n"</span> + sourceName);
-<span class="lineno"> 488 </span>      });
-<span class="lineno"> 489 </span>  });
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:418</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
+<span class="lineno"> 415 </span>          lastPhotoUri = saved; lastThumbnail = thumb;
+<span class="lineno"> 416 </span>          <span class="keyword">if</span> (!settingsVisible) {
+<span class="lineno"> 417 </span>              lastPhoto.setImageBitmap(thumb); lastPhoto.setVisibility(View.VISIBLE);
+<span class="caretline"><span class="lineno"> 418 </span>              <span class="keyword">if</span> (generation == captureGeneration) captureStatus.setText(<span class="warning"><span class="string">"Foto guardada"</span></span>);</span>
+<span class="lineno"> 419 </span>          }
+<span class="lineno"> 420 </span>      });
+<span class="lineno"> 421 </span>  } <span class="keyword">catch</span> (java.io.IOException | RuntimeException failure) {
 </pre>
 
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:500</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
-<span class="lineno"> 497 </span>      <span class="keyword">if</span> (multicastLock != <span class="keyword">null</span> &amp;&amp; multicastLock.isHeld()) multicastLock.release();
-<span class="lineno"> 498 </span>      multicastLock = <span class="keyword">null</span>;
-<span class="lineno"> 499 </span>      setNdiMessage(<span class="string">"NDI detenido"</span>);
-<span class="caretline"><span class="lineno"> 500 </span>      <span class="keyword">if</span> (streamButton != <span class="keyword">null</span>) { streamButton.setText(<span class="warning"><span class="string">"Iniciar NDI"</span></span>); streamButton.setEnabled(<span class="keyword">true</span>); }</span>
-<span class="lineno"> 501 </span>  }
-<span class="lineno"> 502 </span>
-<span class="lineno"> 503 </span>  <span class="keyword">private</span> <span class="keyword">void</span> setNdiMessage(String message) {
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:449</span>: <span class="message">Do not concatenate text displayed with <code>setText</code>. Use resource string with placeholders.</span><br /><pre class="errorlines">
+<span class="lineno"> 446 </span>
+<span class="lineno"> 447 </span>  <span class="keyword">private</span> <span class="keyword">void</span> updateCountdownLabels() {
+<span class="lineno"> 448 </span>      <span class="keyword">if</span> (captureStatus != <span class="keyword">null</span>) captureStatus.setText(idleCaptureText());
+<span class="caretline"><span class="lineno"> 449 </span>      <span class="keyword">if</span> (timerLabel != <span class="keyword">null</span>) timerLabel.setText(<span class="warning">config.countdownSeconds + <span class="string">" s"</span></span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="lineno"> 450 </span>      <span class="keyword">if</span> (trigger != <span class="keyword">null</span>) trigger.setContentDescription(config.countdownSeconds == <span class="number">0</span> ? <span class="string">"Capturar foto sin cuenta regresiva"</span>
+<span class="lineno"> 451 </span>          : <span class="string">"Capturar foto con cuenta regresiva de "</span> + config.countdownSeconds + <span class="string">" segundos"</span>);
+<span class="lineno"> 452 </span>  }
 </pre>
 
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:550</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
-<span class="lineno"> 547 </span>  <span class="keyword">if</span> (!sequence.frameReady(SystemClock.elapsedRealtime())) <span class="keyword">return</span>;
-<span class="lineno"> 548 </span>  frozenFrame.setImageBitmap(photo);
-<span class="lineno"> 549 </span>  frozenFrame.setVisibility(View.VISIBLE);
-<span class="caretline"><span class="lineno"> 550 </span>  captureStatus.setText(<span class="warning"><span class="string">"Guardando foto…"</span></span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-<span class="lineno"> 551 </span>  flash.animate().cancel();
-<span class="lineno"> 552 </span>  flash.setAlpha(<span class="number">1f</span>); flash.setVisibility(View.VISIBLE);
-<span class="lineno"> 553 </span>  flash.animate().alpha(<span class="number">0f</span>).setDuration(CaptureSequence.FLASH_MS).withEndAction(() -> flash.setVisibility(View.GONE)).start();
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:503</span>: <span class="message">Do not concatenate text displayed with <code>setText</code>. Use resource string with placeholders.</span><br /><pre class="errorlines">
+<span class="lineno"> 500 </span>            config.renewSource();
+<span class="lineno"> 501 </span>            config.save(<span class="keyword">this</span>);
+<span class="lineno"> 502 </span>            <span class="keyword">if</span> (transmission != <span class="keyword">null</span>) transmission.configure(config, <span class="keyword">false</span>, <span class="keyword">false</span>);
+<span class="caretline"><span class="lineno"> 503 </span>            sourceLabel.setText(<span class="warning"><span class="string">"Fuente NDI: "</span> + config.sourceName()</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="lineno"> 504 </span>            <span class="keyword">if</span> (restart &amp;&amp; ndiWanted &amp;&amp; resumed) startNdi();
+<span class="lineno"> 505 </span>        });
+<span class="lineno"> 506 </span>        streamButton = button(streaming ? <span class="string">"Detener NDI"</span> : <span class="string">"Iniciar NDI"</span>, <span class="keyword">false</span>);
 </pre>
 
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:565</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
-<span class="lineno"> 562 </span>          lastPhotoUri = saved; lastThumbnail = thumb;
-<span class="lineno"> 563 </span>          <span class="keyword">if</span> (!settingsVisible) {
-<span class="lineno"> 564 </span>              lastPhoto.setImageBitmap(thumb); lastPhoto.setVisibility(View.VISIBLE);
-<span class="caretline"><span class="lineno"> 565 </span>              <span class="keyword">if</span> (generation == captureGeneration) captureStatus.setText(<span class="warning"><span class="string">"Foto guardada"</span></span>);</span>
-<span class="lineno"> 566 </span>          }
-<span class="lineno"> 567 </span>      });
-<span class="lineno"> 568 </span>  } <span class="keyword">catch</span> (java.io.IOException | RuntimeException failure) {
-</pre>
-
-<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:596</span>: <span class="message">Do not concatenate text displayed with <code>setText</code>. Use resource string with placeholders.</span><br /><pre class="errorlines">
-<span class="lineno"> 593 </span>
-<span class="lineno"> 594 </span>  <span class="keyword">private</span> <span class="keyword">void</span> updateCountdownLabels() {
-<span class="lineno"> 595 </span>      <span class="keyword">if</span> (captureStatus != <span class="keyword">null</span>) captureStatus.setText(idleCaptureText());
-<span class="caretline"><span class="lineno"> 596 </span>      <span class="keyword">if</span> (timerLabel != <span class="keyword">null</span>) timerLabel.setText(<span class="warning">config.countdownSeconds + <span class="string">" s"</span></span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-<span class="lineno"> 597 </span>      <span class="keyword">if</span> (trigger != <span class="keyword">null</span>) trigger.setContentDescription(config.countdownSeconds == <span class="number">0</span> ? <span class="string">"Capturar foto sin cuenta regresiva"</span>
-<span class="lineno"> 598 </span>          : <span class="string">"Capturar foto con cuenta regresiva de "</span> + config.countdownSeconds + <span class="string">" segundos"</span>);
-<span class="lineno"> 599 </span>  }
+<span class="location"><a href="file:///D:/OneDrive/Trabajos/Biopus/El%20abismo%20de%20la%20visibilidad/AbismoCam/app/src/main/java/ar/com/biopus/abismocam/MainActivity.java">D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java</a>:503</span>: <span class="message">String literal in <code>setText</code> can not be translated. Use Android resources instead.</span><br /><pre class="errorlines">
+<span class="lineno"> 500 </span>            config.renewSource();
+<span class="lineno"> 501 </span>            config.save(<span class="keyword">this</span>);
+<span class="lineno"> 502 </span>            <span class="keyword">if</span> (transmission != <span class="keyword">null</span>) transmission.configure(config, <span class="keyword">false</span>, <span class="keyword">false</span>);
+<span class="caretline"><span class="lineno"> 503 </span>            sourceLabel.setText(<span class="warning"><span class="string">"Fuente NDI: "</span></span> + config.sourceName());&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+<span class="lineno"> 504 </span>            <span class="keyword">if</span> (restart &amp;&amp; ndiWanted &amp;&amp; resumed) startNdi();
+<span class="lineno"> 505 </span>        });
+<span class="lineno"> 506 </span>        streamButton = button(streaming ? <span class="string">"Detener NDI"</span> : <span class="string">"Iniciar NDI"</span>, <span class="keyword">false</span>);
 </pre>
 
 </div>

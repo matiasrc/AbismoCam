@@ -21,7 +21,7 @@ D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\build.grad
 
    https://developer.android.com/distribute/best-practices/develop/target-sdk.html
 
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\gradle\wrapper\gradle-wrapper.properties:3: Warning: A newer version of Gradle than 8.13 is available: 8.14.5 [AndroidGradlePluginVersion]
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\gradle\wrapper\gradle-wrapper.properties:3: Warning: A newer version of Gradle than 8.13 is available: 8.14.6 [AndroidGradlePluginVersion]
 distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -61,7 +61,7 @@ D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\build.grad
    However, you may simply not be aware that a more recent version is
    available, and that is what this lint check helps find.
 
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml:12: Warning: Expecting android:screenOrientation="unspecified" or "fullSensor" for this activity so the user can use the application in any orientation and provide a great experience on Chrome OS devices [LockedOrientationActivity]
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml:18: Warning: Expecting android:screenOrientation="unspecified" or "fullSensor" for this activity so the user can use the application in any orientation and provide a great experience on Chrome OS devices [LockedOrientationActivity]
         <activity android:name=".MainActivity" android:exported="true" android:screenOrientation="portrait">
                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -86,7 +86,7 @@ D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\build.grad
    MavenCentral dependency, and connects to the library every time, which
    makes it more flexible but also much slower.
 
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml:12: Warning: Fixed screen orientations will be ignored in most cases, starting from Android 16. Android is moving toward a model where apps are expected to adapt to various orientations, display sizes, and aspect ratios. [DiscouragedApi]
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml:18: Warning: Fixed screen orientations will be ignored in most cases, starting from Android 16. Android is moving toward a model where apps are expected to adapt to various orientations, display sizes, and aspect ratios. [DiscouragedApi]
         <activity android:name=".MainActivity" android:exported="true" android:screenOrientation="portrait">
                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -94,7 +94,7 @@ D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\A
    Discouraged APIs are allowed and are not deprecated, but they may be unfit
    for common use (e.g. due to slow performance or subtle behavior).
 
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml:11: Warning: The attribute android:allowBackup is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute android:dataExtractionRules specifying an @xml resource which configures cloud backups and device transfers on Android 12 and higher. [DataExtractionRules]
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml:15: Warning: The attribute android:allowBackup is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute android:dataExtractionRules specifying an @xml resource which configures cloud backups and device transfers on Android 12 and higher. [DataExtractionRules]
         android:icon="@drawable/ic_app" android:allowBackup="false" android:supportsRtl="true">
                                                              ~~~~~
 
@@ -114,10 +114,22 @@ D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\A
    https://developer.android.com/about/versions/12/backup-restore#xml-changes
    https://goo.gle/DataExtractionRules
 
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:252: Warning: Custom view `ImageButton` has setOnTouchListener called on it but does not override performClick [ClickableViewAccessibility]
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\TransmissionService.java:97: Warning: Provide a timeout when requesting a wakelock with PowerManager.Wakelock.acquire(long timeout). This will ensure the OS will cleanup any wakelocks that last longer than you intend, and will save your user's battery. [WakelockTimeout]
+            wakeLock.acquire();
+            ~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "WakelockTimeout":
+   Wakelocks have two acquire methods: one with a timeout, and one without.
+   You should generally always use the one with a timeout. A typical timeout
+   is 10 minutes. If the task takes longer than it is critical that it happens
+   (i.e. can't use JobScheduler) then maybe they should consider a foreground
+   service instead (which is a stronger run guarantee and lets the user know
+   something long/important is happening).
+
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:217: Warning: Custom view `ImageButton` has setOnTouchListener called on it but does not override performClick [ClickableViewAccessibility]
         settingsButton.setOnTouchListener((v, event) -> {
         ^
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:252: Warning: onTouch lambda should call View#performClick when a click is detected [ClickableViewAccessibility]
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:217: Warning: onTouch lambda should call View#performClick when a click is detected [ClickableViewAccessibility]
         settingsButton.setOnTouchListener((v, event) -> {
                                           ^
 
@@ -128,39 +140,36 @@ D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\j
    actions should ideally be placed in View#performClick as some accessibility
    services invoke performClick when a click action should occur.
 
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:97: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:74: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
                 captureStatus.setText("Prepará tu foto");
                                       ~~~~~~~~~~~~~~~~~
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:102: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:79: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
             captureStatus.setText("Capturando…");
                                   ~~~~~~~~~~~~~
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:161: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:131: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
             else if (!granted && cameraStatus != null) cameraStatus.setText("Cámara sin permiso · tocá aquí para habilitarla");
                                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:364: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
-                cameraStatus.setText((config.frontCamera ? "Frontal" : "Trasera") + " · vista previa · sin audio");
-                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:364: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
-                cameraStatus.setText((config.frontCamera ? "Frontal" : "Trasera") + " · vista previa · sin audio");
-                                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:367: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
-                cameraStatus.setText("No se pudo abrir la cámara. Tocá para reintentar.");
-                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:486: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
-                if (streamButton != null) streamButton.setText("Detener NDI");
-                                                               ~~~~~~~~~~~~~
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:500: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
-        if (streamButton != null) { streamButton.setText("Iniciar NDI"); streamButton.setEnabled(true); }
-                                                         ~~~~~~~~~~~~~
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:550: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:337: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+        } catch (RuntimeException error) { cameraStatus.setText("No se pudo iniciar la cámara: " + error.getMessage()); }
+                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:337: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+        } catch (RuntimeException error) { cameraStatus.setText("No se pudo iniciar la cámara: " + error.getMessage()); }
+                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:403: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
         captureStatus.setText("Guardando foto…");
                               ~~~~~~~~~~~~~~~~~
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:565: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:418: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
                         if (generation == captureGeneration) captureStatus.setText("Foto guardada");
                                                                                    ~~~~~~~~~~~~~~~
-D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:596: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:449: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
         if (timerLabel != null) timerLabel.setText(config.countdownSeconds + " s");
                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:503: Warning: Do not concatenate text displayed with setText. Use resource string with placeholders. [SetTextI18n]
+            sourceLabel.setText("Fuente NDI: " + config.sourceName());
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java:503: Warning: String literal in setText can not be translated. Use Android resources instead. [SetTextI18n]
+            sourceLabel.setText("Fuente NDI: " + config.sourceName());
+                                ~~~~~~~~~~~~~~
 
    Explanation for issues of type "SetTextI18n":
    When calling TextView#setText

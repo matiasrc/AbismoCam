@@ -13,6 +13,7 @@ import static org.junit.Assert.*;
 public class OscSettingsTest {
     @Test public void defaultMigrationAndAllIntervalChoicesPersist() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        context.stopService(new android.content.Intent(context, TransmissionService.class)); SystemClock.sleep(300);
         String previous = context.getSharedPreferences("config", 0).getString("json", "{}");
         try {
             context.getSharedPreferences("config", 0).edit().putString("json",
@@ -20,7 +21,7 @@ public class OscSettingsTest {
             Config migrated = Config.load(context);
             assertEquals(50, migrated.oscIntervalMs);
             assertEquals(5, migrated.countdownSeconds);
-            assertEquals("/custom", migrated.address); assertEquals(1280, migrated.width); assertEquals(15, migrated.fps);
+            assertEquals("/custom", migrated.address); assertEquals(768, migrated.width); assertEquals(15, migrated.fps);
             try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
                 for (int choice = 0; choice < 4; choice++) {
                     scenario.onActivity(a -> {

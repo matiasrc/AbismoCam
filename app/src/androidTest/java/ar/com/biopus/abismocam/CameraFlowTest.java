@@ -66,6 +66,7 @@ public class CameraFlowTest {
 
     @Test public void zeroSecondsCapturesImmediatelyAndSendsBothBursts() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        context.stopService(new android.content.Intent(context, TransmissionService.class)); SystemClock.sleep(300);
         grantCamera(context);
         String previous = context.getSharedPreferences("config", 0).getString("json", "{}");
         Uri created = null;
@@ -90,7 +91,9 @@ public class CameraFlowTest {
                 until(() -> read(scenario, "lastPhotoUri") != null, 6000);
                 created = read(scenario, "lastPhotoUri");
                 try (InputStream input = context.getContentResolver().openInputStream(created)) {
-                    assertNotNull(BitmapFactory.decodeStream(input));
+                    Bitmap photo = BitmapFactory.decodeStream(input);
+                    assertNotNull(photo);
+                    assertEquals(576, photo.getWidth()); assertEquals(720, photo.getHeight());
                 }
                 assertTrue((long)read(scenario, "ndiFramesSent") > before);
                 until(() -> !((CaptureSequence)read(scenario, "sequence")).isBusy(), 4000);
@@ -105,12 +108,13 @@ public class CameraFlowTest {
 
     @Test public void releaseCountdownPhotoAndNdiStayIndependent() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        context.stopService(new android.content.Intent(context, TransmissionService.class)); SystemClock.sleep(300);
         grantCamera(context);
         String previous = context.getSharedPreferences("config", 0).getString("json", "{}");
         Uri created = null;
         try (DatagramSocket receiver = new DatagramSocket(0, InetAddress.getByName("127.0.0.1"))) {
             receiver.setSoTimeout(1200);
-            Config config = new Config(); config.width = 640; config.height = 480; config.fps = 15;
+            Config config = new Config(); config.width = 384; config.height = 480; config.fps = 15;
             config.destinations.add(new Osc.Destination("QA", "127.0.0.1", receiver.getLocalPort(), true));
             config.save(context);
             try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
@@ -172,10 +176,11 @@ public class CameraFlowTest {
 
     @Test public void cancellingTouchDoesNotStartAndLeavingDuringCountdownClearsOsc() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        context.stopService(new android.content.Intent(context, TransmissionService.class)); SystemClock.sleep(300);
         grantCamera(context);
         String previous = context.getSharedPreferences("config", 0).getString("json", "{}");
         try (DatagramSocket receiver = new DatagramSocket(0, InetAddress.getByName("127.0.0.1"))) {
-            Config config = new Config(); config.width = 640; config.height = 480; config.fps = 15;
+            Config config = new Config(); config.width = 384; config.height = 480; config.fps = 15;
             config.destinations.add(new Osc.Destination("QA", "127.0.0.1", receiver.getLocalPort(), true)); config.save(context);
             try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
                 until(() -> Boolean.TRUE.equals(read(scenario, "cameraReady")), 20000);
@@ -199,6 +204,7 @@ public class CameraFlowTest {
 
     @Test public void protectedSettingsKeepNdiAndVideoChoicesPersist() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        context.stopService(new android.content.Intent(context, TransmissionService.class)); SystemClock.sleep(300);
         grantCamera(context);
         String previous = context.getSharedPreferences("config", 0).getString("json", "{}");
         try {
@@ -206,9 +212,18 @@ public class CameraFlowTest {
             try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
                 until(() -> Boolean.TRUE.equals(read(scenario, "streaming")), 15000);
                 Config initial = read(scenario, "config");
-                assertEquals(960, initial.width); assertEquals(540, initial.height); assertEquals(30, initial.fps);
-                assertEquals("abismoCam", initial.sourceName);
+                assertEquals(576, initial.width); assertEquals(720, initial.height); assertEquals(30, initial.fps);
+                assertEquals("abismoCam_0001", initial.sourceName());
                 scenario.onActivity(a -> {
+                    View viewport = a.findViewById(R.id.camera_viewport);
+                    View header = a.findViewById(R.id.camera_header);
+                    View footer = a.findViewById(R.id.camera_footer);
+                    int[] imagePosition = new int[2], headerPosition = new int[2], footerPosition = new int[2];
+                    viewport.getLocationOnScreen(imagePosition); header.getLocationOnScreen(headerPosition); footer.getLocationOnScreen(footerPosition);
+                    assertTrue(viewport.getHeight() > 0);
+                    assertEquals(viewport.getWidth() * 5, viewport.getHeight() * 4);
+                    assertTrue(headerPosition[1] + header.getHeight() <= imagePosition[1]);
+                    assertTrue(imagePosition[1] + viewport.getHeight() <= footerPosition[1]);
                     assertNull(a.findViewById(R.id.ndi_toggle));
                     assertFalse(a.findViewById(R.id.ndi_indicator).isClickable());
                     a.findViewById(R.id.settings).performClick();
@@ -239,13 +254,13 @@ public class CameraFlowTest {
                         long start = read(scenario, "ndiFramesSent");
                         until(() -> (long)read(scenario, "ndiFramesSent") > start + 2, 15000);
                         Config saved = Config.load(context);
-                        assertEquals(new int[] {640, 960, 1280}[choice], saved.width);
-                        assertEquals(saved.width * 9 / 16, saved.height);
+                        assertEquals(new int[] {384, 576, 768}[choice], saved.width);
+                        assertEquals(saved.width * 5 / 4, saved.height);
                         assertEquals(rate == 0 ? 15 : 30, saved.fps);
                         NdiSender sender = read(scenario, "ndi");
                         Field frameField = NdiSender.class.getDeclaredField("frame"); frameField.setAccessible(true);
                         NdiSender.VideoFrame frame = (NdiSender.VideoFrame)frameField.get(sender);
-                        assertEquals(saved.height, frame.width); assertEquals(saved.width, frame.height);
+                        assertEquals(saved.width, frame.width); assertEquals(saved.height, frame.height);
                         assertEquals(saved.fps, frame.fpsN);
                     }
                 }

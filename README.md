@@ -1,6 +1,6 @@
 # abismoCam · MVP Android
 
-Cámara para **El abismo de la visibilidad**, Lisandro Peralta. Versión 0.6.0. Samsung A51 como dispositivo objetivo; Android 8 o posterior, ARM64. Interfaz en español, orientación vertical, cámara frontal por defecto, sin micrófono. Guarda fotografías, no graba video.
+Cámara para **El abismo de la visibilidad**, Lisandro Peralta. Versión 0.9.0. Samsung A51 como dispositivo objetivo; Android 8 o posterior, ARM64. Interfaz en español, orientación vertical, cámara frontal por defecto, sin micrófono. Guarda fotografías, no graba video.
 
 ## Estado
 
@@ -18,11 +18,43 @@ El SDK utilizado se instaló en `C:/Users/lisan/AppData/Local/NDI-SDK-Android`. 
 4. Configurar los receptores para escuchar OSC UDP en el puerto elegido, en su interfaz de red o `0.0.0.0`, no solamente en `127.0.0.1`.
 5. Soltar el disparador circular inicia la cuenta configurada: **5 segundos por defecto**, elegible de **0 a 15 segundos** en pasos de uno. Envía `/camara/disparo` con tipo OSC `,i` y entero `1` al comenzar y `0` al terminar. Con **0 s** solicita la foto al soltar, sin mostrar números; OSC envía cinco `1` y después cinco `0`, como se detalla abajo. La ruta es configurable. Mantener el dedo apoyado no inicia nada; los toques adicionales se bloquean hasta volver a la cámara en vivo.
 6. Al terminar: flash blanco breve, foto congelada durante un segundo y regreso automático al video. La foto se guarda como JPEG en **Pictures/AbismoCam** y aparece una miniatura para abrirla. La cámara frontal y su foto se muestran espejadas.
-7. NDI comienza automáticamente al abrir la app con permiso de cámara. Seleccionar la fuente **abismoCam** en los receptores. El indicador de la pantalla principal no responde a toques; activar o detener NDI solo está disponible dentro de ajustes. Cada receptor necesita soporte NDI High Bandwidth.
+7. NDI comienza automáticamente al abrir la app con permiso de cámara. Seleccionar en los receptores el nombre indicado en ajustes, por ejemplo **abismoCam_Li_0001**. El indicador de la pantalla principal no responde a toques; activar o detener NDI solo está disponible dentro de ajustes. Cada receptor necesita soporte NDI High Bandwidth.
 
-**NDI continúa enviando la cámara original en vivo durante el conteo, flash, congelado y guardado.** Esos efectos solo aparecen en el teléfono; NDI no lleva espejo ni superposiciones. La foto usa el siguiente cuadro disponible al terminar el conteo, a la resolución del video configurado. La pantalla recorta para llenarse; el archivo conserva el cuadro completo.
+**NDI continúa enviando la cámara original en vivo durante el conteo, flash, congelado y guardado.** Esos efectos solo aparecen en el teléfono; NDI no lleva espejo ni superposiciones. La foto usa el siguiente cuadro disponible al terminar el conteo, a la resolución del video configurado. La ventana de cámara muestra el mismo encuadre 4:5 que sale por NDI y se guarda en la foto, con espejo solo en la vista frontal y su fotografía.
 
-El botón y la interfaz no se incluyen en el video. La vista frontal puede mostrarse espejada en la previsualización; el video enviado conserva la imagen de cámara sin espejo. Los cuadros se rotan para su orientación vertical. Resoluciones seleccionables: nHD 640×360, qHD 960×540 y HD 1280×720; en vertical, 360×640, 540×960 y 720×1280. Los FPS se eligen por separado: 15 o 30. La primera actualización a esta versión usa qHD a 30 fps y conserva los destinos OSC. Luego se recuerda la selección. Si la cámara entrega otro tamaño, el cuadro se recorta al centro y escala a la resolución elegida, sin espejo para NDI. Los FPS efectivos dependen del teléfono y la red.
+## Transmisión en segundo plano
+
+Desde 0.9.0, la cámara y NDI se ejecutan en un servicio en primer plano, iniciado mientras la aplicación está visible y tiene permiso de cámara. **Ir al inicio, cambiar de aplicación, pulsar Atrás o bloquear la pantalla no detiene NDI.** Volver a la aplicación recupera la vista previa del mismo sender, sin cambiar el nombre ni incrementar el contador.
+
+Para cerrar completamente, **quitar abismoCam de la lista de aplicaciones recientes**: se cierra la cámara, se destruye el sender y se retira la notificación. Forzar detención también corta la transmisión. No se inicia automáticamente al reiniciar el teléfono ni se solicita al sistema reiniciar el servicio después de que lo mate.
+
+La notificación indica la fuente y permite **Detener NDI** o volver a la app. En Android 13 o posterior se solicita permiso para mostrarla. Detener NDI manualmente se conserva al volver del segundo plano; se puede iniciar otra vez desde ajustes. Mientras la sesión de cámara siga abierta, el servicio y su notificación permanecen activos incluso con NDI detenido; quitarla de recientes libera todo.
+
+Si se pasa a segundo plano durante una cuenta, se cancela la foto pendiente y se intenta enviar la ráfaga OSC de 0, igual que antes. El video continúa. La transmisión usa bloqueos de CPU y Wi-Fi mientras vive el servicio para ayudar a mantenerla con la pantalla apagada. Esto consume batería; Android, las restricciones del fabricante, otra app que tome la cámara, una pérdida de red o un cierre forzado pueden interrumpirla. Hay que verificar el bloqueo sostenido y el ahorro de batería en el A51 y los demás teléfonos.
+
+## Nombre de fuente por teléfono
+
+En **Configuración → Cámara**, escribir el **Identificador del teléfono** (por ejemplo `Li`) y tocar **Guardar y volver a cámara**. El nombre resultante es `abismoCam_Li_0001`. Usar un identificador distinto en cada teléfono; la app no comprueba duplicados en la red. Se permiten hasta 24 letras ASCII, números, guiones y guiones bajos. El identificador vacío produce `abismoCam_0001`.
+
+El botón **Renovar fuente NDI** incrementa el contador y lo guarda inmediatamente: `abismoCam_Li_0001` → `abismoCam_Li_0002`. Usa el identificador ya guardado; un texto editado todavía sin guardar no se aplica con ese botón. Si la fuente está activa o iniciándose, se cierra y se crea con el nuevo nombre. Si estaba detenida, permanece detenida.
+
+Cambiar el identificador y guardar conserva el contador y recrea la fuente cuando estaba activa. Tanto el identificador como el número sobreviven al cierre de la app y al reinicio del teléfono. El número tiene un mínimo de cuatro cifras y continúa con `10000` después de `9999`, sin volver a cero. Al actualizar desde versiones anteriores se inicia en `abismoCam_0001`, conservando cámara, calidad, transporte y OSC. Borrar datos o desinstalar elimina estas preferencias locales.
+
+Los receptores pueden necesitar seleccionar la fuente nueva. Renovar no elimina entradas antiguas de sus listas ni garantiza recuperar un bloqueo interno del SDK, la cámara o la red. El botón mantiene las operaciones de cierre y creación en orden; si una llamada nativa no retorna, la renovación también puede quedar esperando. La app sigue llamándose **abismoCam**.
+
+## Encuadre y resolución 4:5
+
+La cámara muestra una ventana vertical **4:5**, con bandas negras para separar la imagen de los controles. El encabezado y el engranaje quedan arriba; el disparador y la información de resolución, FPS, NDI y OSC quedan debajo. En pantallas más bajas, la ventana se reduce para mostrar el encuadre completo sin taparlo con botones. Las bandas, textos, cuenta y flash son locales: no aparecen en NDI ni en el JPEG.
+
+| Calidad | Ancho × alto de NDI y foto |
+| --- | --- |
+| Baja | 384 × 480 |
+| Media (predeterminada) | 576 × 720 |
+| Alta | 768 × 960 |
+
+Los FPS se eligen por separado: **15 o 30**, con **30 por defecto**. Las dimensiones ya están expresadas en orientación vertical; no se intercambian. Se recorta el sensor al centro para obtener 4:5 y se escala sin deformar. CameraX comparte el área de sensor entre la vista previa y el análisis utilizado por NDI y la foto. La cámara frontal conserva el espejo en pantalla y en el JPEG; NDI sigue sin espejo.
+
+Al actualizar se conserva el nivel de calidad: nHD pasa a Baja, qHD a Media y HD a Alta. También se conservan FPS, cámara, transporte NDI, cuenta regresiva y configuración OSC. Una instalación nueva usa Media a 30 fps. Los FPS efectivos dependen del teléfono y la red.
 
 ## Cuenta regresiva configurable
 
@@ -43,7 +75,7 @@ Son tiempos programados, no garantías de latencia ni recepción. Con cuentas de
 
 ## Transporte NDI
 
-En ajustes (engranaje durante tres segundos), elegir **Unicast** o **Multicast** y tocar **Guardar y volver a cámara**. Unicast es el valor inicial; la selección queda guardada. Cambiar el selector sin guardar no modifica la transmisión. Al guardar un cambio se reinicia el emisor NDI; los receptores pueden mostrar negro o el último cuadro durante la reconexión. El nombre sigue siendo `abismoCam`. Si NDI estaba detenido manualmente, permanece detenido hasta iniciarlo desde ajustes.
+En ajustes (engranaje durante tres segundos), elegir **Unicast** o **Multicast** y tocar **Guardar y volver a cámara**. Unicast es el valor inicial; la selección queda guardada. Cambiar el selector sin guardar no modifica la transmisión. Al guardar un cambio se reinicia el emisor NDI; los receptores pueden mostrar negro o el último cuadro durante la reconexión. Se conserva el nombre configurado de la fuente. Si NDI estaba detenido manualmente, permanece detenido hasta iniciarlo desde ajustes.
 
 Multicast habilita la negociación con cada receptor: no obliga a todos a usarlo. La red debe permitir multicast y administrar correctamente IGMP; un receptor con multicast deshabilitado puede usar unicast. Probar con el teléfono por Wi-Fi de 5 GHz y las computadoras por cable antes de la instalación. OSC es independiente y conserva sus modos individual/broadcast; ambos utilizan las repeticiones configuradas.
 
@@ -91,7 +123,7 @@ Dependencias fijadas: AGP 8.13.2, Gradle 8.13 (con checksum), Java 17 o posterio
 
 Resultado: `entregables/AbismoCam-debug.apk`. Es un APK de desarrollo para instalar manualmente; no es una publicación en Google Play. Los reportes de pruebas y análisis estático se exportan a `entregables/validacion/`.
 
-Las pruebas unitarias cubren OSC, sus repeticiones y el reloj de captura (16 casos). Con un dispositivo o emulador conectado, `gradlew.bat connectedDebugAndroidTest` ejecuta además las pruebas Android: toques, OSC UDP real, captura JPEG, cancelación, selección de intervalos, transporte NDI y avance de cuadros enviados al SDK durante el congelado. Requieren la biblioteca NDI de la arquitectura correspondiente; no prueban un receptor NDI externo.
+Las pruebas unitarias cubren OSC, sus repeticiones y el reloj de captura (18 casos). Con un dispositivo o emulador conectado, `gradlew.bat connectedDebugAndroidTest` ejecuta además las pruebas Android: toques, OSC UDP real, captura JPEG, cancelación, recorte 4:5 con filas RGBA acolchadas, migración de calidad, geometría de la ventana, selección de intervalos, transporte NDI y avance de cuadros enviados al SDK durante el congelado. Requieren la biblioteca NDI de la arquitectura correspondiente; no prueban un receptor NDI externo.
 
 Los archivos temporales de compilación se guardan en `%USERPROFILE%/.abismocam/build/`, en una subcarpeta por proyecto, para evitar bloqueos de OneDrive. El código y los entregables permanecen en esta carpeta. En Android Studio puede ejecutarse la tarea raíz `exportDebugApk` para copiar el APK a `entregables`.
 
@@ -102,8 +134,8 @@ Los archivos temporales de compilación se guardan en `%USERPROFILE%/.abismocam/
 - Si se abandona la app durante el conteo, se cancela la captura y se intenta enviar `0`. Cancelar el toque antes de soltar no inicia un conteo. Los ajustes se bloquean durante la secuencia. No puede garantizarse el envío si Android mata el proceso, se corta la red o se pierde el paquete UDP.
 - UDP no confirma entrega, orden ni sincronía entre computadoras. El estado “enviado” cuenta entregas al sistema operativo, no confirmaciones remotas.
 - Video y OSC viajan por separado. Un mensaje OSC no identifica un cuadro NDI ni garantiza sincronización con él.
-- La transmisión NDI continúa al entrar y salir de ajustes. Guardar cambios de cámara, resolución o FPS la reinicia brevemente. Al salir de la app se detiene; al volver se reanuda si no se había detenido manualmente en ajustes. Cada apertura nueva inicia NDI automáticamente. La pantalla permanece encendida mientras la app está visible.
-- Sin pruebas físicas todavía no se garantiza 720p/30 fps ni una cantidad concreta de receptores para el A51.
+- La transmisión NDI continúa en ajustes, segundo plano y con la pantalla bloqueada. Guardar cambios de cámara, resolución o FPS la reinicia brevemente. Quitar la app de recientes la detiene; volver desde segundo plano conserva el sender y su estado. Una sesión nueva inicia NDI automáticamente. La pantalla permanece encendida mientras la app está visible.
+- Sin pruebas físicas todavía no se garantiza alcanzar 30 fps en todas las resoluciones ni una cantidad concreta de receptores para el A51.
 
 ## Referencias y licencias
 

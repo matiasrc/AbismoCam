@@ -15,4 +15,10 @@
     <item name="countdown_seconds" type="id" />
     <item name="save_settings" type="id" />
     <item name="capture_status" type="id" />
+    <item name="camera_viewport" type="id" />
+    <item name="camera_header" type="id" />
+    <item name="camera_footer" type="id" />
+    <item name="ndi_source_name" type="id" />
+    <item name="ndi_source_identifier" type="id" />
+    <item name="ndi_renew_source" type="id" />
 </resources>

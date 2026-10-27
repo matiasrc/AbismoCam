@@ -23,7 +23,8 @@ final class NdiSender {
         public String name;
         public Pointer groups;
         // C++ bool ocupa un byte; JNA boolean ocuparía cuatro.
-        public byte clockVideo = 0;
+        // clockVideo = 1 mantiene cadencia estable hacia OBS (obs-ndi / DistroAV) para evitar congelamientos de buffer.
+        public byte clockVideo = 1;
         public byte clockAudio = 0;
     }
 
@@ -42,18 +43,13 @@ final class NdiSender {
     }
 
     void start(String name, int fps, java.io.File configDirectory, boolean multicast) {
-        stop();
-        if (multicastMode == null || multicastMode != multicast) {
-            close();
-            NdiTransport.configure(configDirectory, multicast);
-            multicastMode = multicast;
-        }
+        close();
+        NdiTransport.configure(configDirectory, multicast);
+        multicastMode = multicast;
         if (library == null) library = NativeLibrary.getInstance("ndi", Collections.singletonMap("string-encoding", "UTF-8"));
-        if (!initialized) {
-            int ok = library.getFunction("NDIlib_initialize").invokeInt(new Object[0]);
-            if ((ok & 0xff) == 0) throw new IllegalStateException("El SDK NDI no pudo inicializarse.");
-            initialized = true;
-        }
+        int ok = library.getFunction("NDIlib_initialize").invokeInt(new Object[0]);
+        if ((ok & 0xff) == 0) throw new IllegalStateException("El SDK NDI no pudo inicializarse.");
+        initialized = true;
         settings = new CreateSettings();
         settings.name = name;
         settings.write();
@@ -74,7 +70,7 @@ final class NdiSender {
         frame.data = Native.getDirectBufferPointer(pixels.slice());
         frame.stride = stride;
         frame.write();
-        // Envío síncrono: ImageProxy no se cierra hasta que NDI termina de leer el cuadro.
+        // Envío síncrono con clockVideo = 1 para regular cadencia exacta hacia receptores NDI.
         sendVideo.invokeVoid(new Object[] {sender, frame.getPointer()});
     }
 

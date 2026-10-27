@@ -22,7 +22,7 @@
     <issue
         id="AndroidGradlePluginVersion"
         severity="Warning"
-        message="A newer version of Gradle than 8.13 is available: 8.14.5"
+        message="A newer version of Gradle than 8.13 is available: 8.14.6"
         category="Correctness"
         priority="4"
         summary="Obsolete Android Gradle Plugin Version"
@@ -161,7 +161,7 @@
         errorLine2="                                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml"
-            line="12"
+            line="18"
             column="72"/>
     </issue>
 
@@ -193,7 +193,7 @@
         errorLine2="                                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml"
-            line="12"
+            line="18"
             column="72"/>
     </issue>
 
@@ -211,8 +211,24 @@
         errorLine2="                                                             ~~~~~">
         <location
             file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\AndroidManifest.xml"
-            line="11"
+            line="15"
             column="62"/>
+    </issue>
+
+    <issue
+        id="WakelockTimeout"
+        severity="Warning"
+        message="Provide a timeout when requesting a wakelock with `PowerManager.Wakelock.acquire(long timeout)`. This will ensure the OS will cleanup any wakelocks that last longer than you intend, and will save your user&apos;s battery."
+        category="Performance"
+        priority="9"
+        summary="Using wakeLock without timeout"
+        explanation="Wakelocks have two acquire methods: one with a timeout, and one without. You should generally always use the one with a timeout. A typical timeout is 10 minutes. If the task takes longer than it is critical that it happens (i.e. can&apos;t use `JobScheduler`) then maybe they should consider a foreground service instead (which is a stronger run guarantee and lets the user know something long/important is happening)."
+        errorLine1="            wakeLock.acquire();"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\TransmissionService.java"
+            line="97"
+            column="13"/>
     </issue>
 
     <issue
@@ -227,7 +243,7 @@
         errorLine2="        ^">
         <location
             file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
-            line="252"
+            line="217"
             column="9"/>
     </issue>
 
@@ -243,7 +259,7 @@
         errorLine2="                                          ^">
         <location
             file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
-            line="252"
+            line="217"
             column="43"/>
     </issue>
 
@@ -261,7 +277,7 @@
         errorLine2="                                      ~~~~~~~~~~~~~~~~~">
         <location
             file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
-            line="97"
+            line="74"
             column="39"/>
     </issue>
 
@@ -279,7 +295,7 @@
         errorLine2="                                  ~~~~~~~~~~~~~">
         <location
             file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
-            line="102"
+            line="79"
             column="35"/>
     </issue>
 
@@ -297,7 +313,7 @@
         errorLine2="                                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
-            line="161"
+            line="131"
             column="77"/>
     </issue>
 
@@ -311,12 +327,12 @@
         explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
         url="https://developer.android.com/guide/topics/resources/localization.html"
         urls="https://developer.android.com/guide/topics/resources/localization.html"
-        errorLine1="                cameraStatus.setText((config.frontCamera ? &quot;Frontal&quot; : &quot;Trasera&quot;) + &quot; · vista previa · sin audio&quot;);"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="        } catch (RuntimeException error) { cameraStatus.setText(&quot;No se pudo iniciar la cámara: &quot; + error.getMessage()); }"
+        errorLine2="                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
-            line="364"
-            column="38"/>
+            line="337"
+            column="65"/>
     </issue>
 
     <issue
@@ -329,66 +345,12 @@
         explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
         url="https://developer.android.com/guide/topics/resources/localization.html"
         urls="https://developer.android.com/guide/topics/resources/localization.html"
-        errorLine1="                cameraStatus.setText((config.frontCamera ? &quot;Frontal&quot; : &quot;Trasera&quot;) + &quot; · vista previa · sin audio&quot;);"
-        errorLine2="                                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="        } catch (RuntimeException error) { cameraStatus.setText(&quot;No se pudo iniciar la cámara: &quot; + error.getMessage()); }"
+        errorLine2="                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
-            line="364"
-            column="85"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        severity="Warning"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        category="Internationalization"
-        priority="6"
-        summary="TextView Internationalization"
-        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
-        url="https://developer.android.com/guide/topics/resources/localization.html"
-        urls="https://developer.android.com/guide/topics/resources/localization.html"
-        errorLine1="                cameraStatus.setText(&quot;No se pudo abrir la cámara. Tocá para reintentar.&quot;);"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
-            line="367"
-            column="38"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        severity="Warning"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        category="Internationalization"
-        priority="6"
-        summary="TextView Internationalization"
-        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
-        url="https://developer.android.com/guide/topics/resources/localization.html"
-        urls="https://developer.android.com/guide/topics/resources/localization.html"
-        errorLine1="                if (streamButton != null) streamButton.setText(&quot;Detener NDI&quot;);"
-        errorLine2="                                                               ~~~~~~~~~~~~~">
-        <location
-            file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
-            line="486"
-            column="64"/>
-    </issue>
-
-    <issue
-        id="SetTextI18n"
-        severity="Warning"
-        message="String literal in `setText` can not be translated. Use Android resources instead."
-        category="Internationalization"
-        priority="6"
-        summary="TextView Internationalization"
-        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
-        url="https://developer.android.com/guide/topics/resources/localization.html"
-        urls="https://developer.android.com/guide/topics/resources/localization.html"
-        errorLine1="        if (streamButton != null) { streamButton.setText(&quot;Iniciar NDI&quot;); streamButton.setEnabled(true); }"
-        errorLine2="                                                         ~~~~~~~~~~~~~">
-        <location
-            file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
-            line="500"
-            column="58"/>
+            line="337"
+            column="65"/>
     </issue>
 
     <issue
@@ -405,7 +367,7 @@
         errorLine2="                              ~~~~~~~~~~~~~~~~~">
         <location
             file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
-            line="550"
+            line="403"
             column="31"/>
     </issue>
 
@@ -423,7 +385,7 @@
         errorLine2="                                                                                   ~~~~~~~~~~~~~~~">
         <location
             file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
-            line="565"
+            line="418"
             column="84"/>
     </issue>
 
@@ -441,8 +403,44 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
-            line="596"
+            line="449"
             column="52"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="            sourceLabel.setText(&quot;Fuente NDI: &quot; + config.sourceName());"
+        errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
+            line="503"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="            sourceLabel.setText(&quot;Fuente NDI: &quot; + config.sourceName());"
+        errorLine2="                                ~~~~~~~~~~~~~~">
+        <location
+            file="D:\OneDrive\Trabajos\Biopus\El abismo de la visibilidad\AbismoCam\app\src\main\java\ar\com\biopus\abismocam\MainActivity.java"
+            line="503"
+            column="33"/>
     </issue>
 
 </issues>

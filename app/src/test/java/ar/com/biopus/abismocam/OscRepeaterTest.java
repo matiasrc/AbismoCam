@@ -17,15 +17,15 @@ public class OscRepeaterTest {
         for (int interval : new int[] {10, 25, 50, 100}) {
             try (DatagramSocket receiver = new DatagramSocket(0, InetAddress.getLoopbackAddress());
                  OscRepeater repeater = new OscRepeater((targets, path, value) -> Osc.send(targets, path, value))) {
-                receiver.setSoTimeout(2000);
+                receiver.setSoTimeout(3000);
                 long start = System.nanoTime();
                 repeater.sendPulse(Collections.singletonList(new Osc.Destination("QA", "127.0.0.1", receiver.getLocalPort(), true)), "/test", interval);
                 repeater.close();
-                for (int i = 0; i < 10; i++) {
-                    assertEquals(i < 5 ? 1 : 0, receive(receiver));
-                    if (i == 5) assertTrue(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start) >= 5L * interval - 15);
+                for (int i = 0; i < 20; i++) {
+                    assertEquals(i < 10 ? 1 : 0, receive(receiver));
+                    if (i == 10) assertTrue(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start) >= 10L * interval - 15);
                 }
-                assertTrue(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start) >= 9L * interval - 15);
+                assertTrue(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start) >= 19L * interval - 15);
                 receiver.setSoTimeout(100);
                 assertThrows(java.net.SocketTimeoutException.class, () -> receive(receiver));
             }
@@ -37,23 +37,23 @@ public class OscRepeaterTest {
                  DatagramSocket second = new DatagramSocket(0, InetAddress.getLoopbackAddress());
                  DatagramSocket disabled = new DatagramSocket(0, InetAddress.getLoopbackAddress());
                  OscRepeater repeater = new OscRepeater((targets, path, value) -> Osc.send(targets, path, value))) {
-                first.setSoTimeout(2000); second.setSoTimeout(2000); disabled.setSoTimeout(40);
+                first.setSoTimeout(2500); second.setSoTimeout(2500); disabled.setSoTimeout(40);
                 for (int value : new int[] {1, 0}) {
                     long start = System.nanoTime();
                     repeater.send(Arrays.asList(
                         new Osc.Destination("A", "127.0.0.1", first.getLocalPort(), true),
                         new Osc.Destination("B", "127.0.0.1", second.getLocalPort(), true),
                         new Osc.Destination("Off", "127.0.0.1", disabled.getLocalPort(), false)), "/test", value, interval);
-                    for (int i = 0; i < 5; i++) {
+                    for (int i = 0; i < 10; i++) {
                         assertEquals(value, receive(first)); assertEquals(value, receive(second));
                     }
                     long elapsed = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
-                    assertTrue("Ráfaga demasiado corta: " + elapsed, elapsed >= 4L * interval - 15);
+                    assertTrue("Ráfaga demasiado corta: " + elapsed, elapsed >= 9L * interval - 15);
                     first.setSoTimeout(40); second.setSoTimeout(40);
                     assertThrows(java.net.SocketTimeoutException.class, () -> receive(first));
                     assertThrows(java.net.SocketTimeoutException.class, () -> receive(second));
                     assertThrows(java.net.SocketTimeoutException.class, () -> receive(disabled));
-                    first.setSoTimeout(2000); second.setSoTimeout(2000);
+                    first.setSoTimeout(2500); second.setSoTimeout(2500);
                 }
             }
         }
@@ -76,7 +76,7 @@ public class OscRepeaterTest {
             repeater.close();
             unblock.countDown();
             assertEquals(Integer.valueOf(1), received.poll(2, TimeUnit.SECONDS));
-            for (int i = 0; i < 5; i++) assertEquals(Integer.valueOf(0), received.poll(2, TimeUnit.SECONDS));
+            for (int i = 0; i < 10; i++) assertEquals(Integer.valueOf(0), received.poll(2, TimeUnit.SECONDS));
             assertNull(received.poll(450, TimeUnit.MILLISECONDS));
         } finally { unblock.countDown(); }
     }

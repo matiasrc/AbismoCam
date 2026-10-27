@@ -81,6 +81,7 @@ public final class Osc {
         List<String> errors = new ArrayList<>();
         try (DatagramSocket socket = new DatagramSocket()) {
             socket.setBroadcast(true);
+            try { socket.setTrafficClass(0xB8); } catch (Exception ignored) { }
             for (Destination destination : destinations) {
                 if (!destination.enabled) continue;
                 try {

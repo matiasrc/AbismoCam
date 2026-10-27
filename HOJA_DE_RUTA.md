@@ -1,6 +1,6 @@
 # abismoCam — historial y hoja de ruta
 
-Última actualización: **1 de octubre de 2026**. Versión actual: **0.6.0** (código de versión Android: 7).
+Última actualización: **25 de octubre de 2026**. Versión actual: **0.9.0** (código de versión Android: 10).
 
 Aplicación Android de Lisandro Peralta para el proyecto **El abismo de la visibilidad**. Transmite la cámara por NDI, envía señales OSC y guarda fotografías con una cuenta regresiva local.
 
@@ -122,12 +122,40 @@ Validación: compilación y once pruebas unitarias correctas; lint con 0 errores
 - Se ampliaron las pruebas del reloj para todas las duraciones, del pulso OSC inmediato para los cuatro intervalos y del ajuste persistente. Las pruebas Android incluyen captura sin cuenta y regresión del flujo de cinco segundos; los resultados se detallan en VALIDACION.md.
 - Resultado: 16 pruebas unitarias y pruebas Android de 0 s/configuración aprobadas. La regresión de captura de cinco segundos falló en dos intentos por falta de un cuadro nuevo, consistente con el fallo de cámara del emulador ya registrado; queda pendiente de validación física.
 
+### 0.7.0 — encuadre vertical 4:5 (18/10/2026)
+
+- Se sustituyeron las tres resoluciones 9:16 por **384 × 480**, **576 × 720** y **768 × 960**, denominadas Baja, Media y Alta. Media a 30 fps es el valor inicial; continúa la elección independiente de 15/30 fps.
+- Vista previa, NDI y fotografía usan el mismo encuadre de sensor 4:5, con recorte central y escalado sin deformación. NDI permanece sin espejo; vista y foto frontal, espejadas.
+- La pantalla reserva bandas negras para el encabezado/ajustes y el disparador/información. La ventana 4:5 se adapta al espacio disponible y muestra el encuadre completo. Se centró también el texto FOTO.
+- Las bandas no se transmiten ni se guardan. La cuenta, el flash y la foto congelada se presentan dentro de la ventana; NDI continúa en vivo.
+- Se migran las preferencias al esquema 4, conservando el nivel de calidad anterior y el resto de ajustes. No se modifica la secuencia OSC de cinco mensajes por valor ni sus intervalos.
+- Se agregaron verificaciones de migración, recorte con padding de filas y tamaño de ventana. Las pruebas de cámara comprueban las seis combinaciones de calidad/FPS y las dimensiones del JPEG. Resultados y límites: VALIDACION.md. Validación de esta entrega: 16 pruebas unitarias y 7 pruebas Android aprobadas, lint sin errores y revisión visual de las bandas negras. Falta comprobar el encuadre y el rendimiento con receptores físicos.
+
+### 0.8.0 — identidad NDI por teléfono (23/10/2026)
+
+- Se añadió un identificador configurable para distinguir teléfonos: `abismoCam_Li_0001`. El identificador se aplica al guardar y conserva el número.
+- El botón **Renovar fuente NDI** incrementa el contador inmediatamente y recrea el sender si estaba activo; mantiene detenido el que estaba apagado. Usa el identificador guardado, sin aplicar cambios pendientes de otros ajustes.
+- Identificador y contador se guardan entre sesiones. El contador utiliza al menos cuatro cifras y continúa con cinco o más cuando sea necesario, sin reiniciarse al llegar a 9999.
+- Migración al esquema 5: instalaciones anteriores adoptan `abismoCam_0001` sin perder calidad, cámara, transporte, cuenta ni destinos OSC. Cada teléfono debe configurar un identificador diferente; no hay detección automática de duplicados.
+- La renovación ayuda a identificar una fuente nueva, pero no borra fuentes obsoletas de otros programas ni garantiza resolver bloqueos. Los receptores pueden requerir selección manual del nuevo nombre.
+- Validación: 18 pruebas unitarias y dos pruebas Android aprobadas; lint sin errores y revisión visual del panel. Falta validar varios teléfonos y receptores físicos. Detalles: VALIDACION.md.
+
+### 0.9.0 — transmisión independiente de la pantalla (25/10/2026)
+
+- Cámara, análisis de cuadros, recorte 4:5 y sender NDI se trasladaron a un servicio en primer plano con ciclo de vida propio.
+- Ir al inicio, cambiar de aplicación, pulsar Atrás o bloquear el teléfono mantiene la transmisión. Regresar conecta la vista previa al mismo sender; no renueva su identidad.
+- Quitar la aplicación de recientes cierra cámara/NDI y libera los bloqueos de CPU, Wi-Fi y descubrimiento. El servicio no se reinicia automáticamente ni se inicia al arrancar el teléfono.
+- Se añadió una notificación con nombre de fuente, acceso a la app y acción **Detener NDI**, y solicitud de permiso de notificaciones en Android 13+.
+- El estado NDI detenido se conserva al volver del segundo plano. La sesión de cámara y la notificación siguen activas hasta cerrar desde recientes.
+- Se conserva la cancelación de la cuenta al pasar a segundo plano con su ráfaga OSC de 0. El video no se cancela con ella.
+- Se añadieron pruebas de continuidad, bloqueo/desbloqueo, regreso, recreación de la actividad, eliminación de la tarea y detención desde notificación: ambas aprobaron. Pasaron 18 pruebas unitarias y siete de ocho regresiones Android; la captura de cinco segundos sigue fallando por falta de un cuadro nuevo en el emulador. Resultados y límites: VALIDACION.md.
+
 ## Estado actual y límites conocidos
 
 - APK para instalación manual: `entregables/AbismoCam-debug.apk`. Es una compilación de desarrollo, no una publicación en Google Play.
-- Cámara frontal, formato vertical, qHD/30 por defecto; valores configurables. Sin micrófono ni grabación de video.
+- Cámara frontal, formato vertical 4:5, Media 576 × 720 a 30 fps por defecto; valores configurables. Sin micrófono ni grabación de video.
 - Envío NDI de imagen original; espejo y efectos de captura solo en la presentación local, con fotografía frontal espejada.
-- La app debe permanecer visible para transmitir. Al salir se detiene NDI; al volver se reanuda si no se había detenido manualmente.
+- NDI continúa en segundo plano y con pantalla bloqueada mediante un servicio en primer plano. Quitar la app de recientes lo detiene. Android o el fabricante aún pueden interrumpir el proceso.
 - OSC UDP no confirma recepción. “Enviado” no equivale a recibido por todas las computadoras.
 - Se observó una falla intermitente en el emulador: después de cambios de calidad y recreación de actividades, algunas capturas agotaron el plazo de espera de un cuadro. Pruebas posteriores pasaron, pero la causa no quedó confirmada ni el problema definitivamente resuelto.
 - La prueba multicast aportada por el usuario complementa la validación del emulador. Sigue pendiente comprobar rendimiento sostenido y compatibilidad en el montaje completo.
@@ -136,8 +164,11 @@ Validación: compilación y once pruebas unitarias correctas; lint con 0 errores
 
 ### Validaciones pendientes del funcionamiento acordado
 
+- [ ] Comparar el encuadre 4:5 de la pantalla, las fotos y un receptor NDI físico, incluyendo espejo frontal y las tres calidades.
+- [ ] Validar transmisión sostenida con pantalla bloqueada, cambio de apps y eliminación desde recientes en cada teléfono, incluyendo ahorro de batería.
 - [ ] Probar en el Samsung A51 arranques, permisos, orientación, espejo, colores, guardado en galería y capturas repetidas.
 - [ ] Repetir cambios de calidad y capturas para comprobar si aparece la falla intermitente observada en el emulador.
+- [ ] Verificar nombres distintos por teléfono, renovación y selección de la fuente nueva en los receptores físicos.
 - [ ] Validar recepción NDI simultánea en unas cinco computadoras y los programas que se utilizarán, incluido TouchDesigner.
 - [ ] Comprobar Unicast → Multicast → Unicast en la red real, midiendo interrupción y necesidad de reconectar o reiniciar cada receptor.
 - [ ] Confirmar el transporte real de los receptores con capturas de red; el selector de la app solo muestra lo configurado.
@@ -155,7 +186,7 @@ Estas tareas son verificaciones pendientes; no implican nuevas funciones ni tien
 ## Referencias del proyecto
 
 - [README.md](README.md): instalación, configuración y compilación actualizadas.
-- [VALIDACION.md](VALIDACION.md): pruebas y limitaciones documentadas de 0.3.0 y 0.4.0.
+- [VALIDACION.md](VALIDACION.md): pruebas y limitaciones documentadas por versión.
 - [Informes de validación](entregables/validacion/): resultados y capturas conservados en el proyecto. Algunos informes se actualizan al recompilar; no son un archivo inmutable de cada versión.
 - [Configuración de versión Android](app/build.gradle): versión actual del código.
 

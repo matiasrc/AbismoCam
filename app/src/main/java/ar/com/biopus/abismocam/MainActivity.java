@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
@@ -15,19 +14,14 @@ import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.Uri;
-import android.net.nsd.NsdManager;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.text.InputType;
-import android.util.Range;
-import android.util.Size;
 import android.view.Gravity;
 import android.view.MotionEvent;
-import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -46,42 +40,25 @@ import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.camera.core.CameraSelector;
-import androidx.camera.core.ImageAnalysis;
-import androidx.camera.core.ImageProxy;
-import androidx.camera.core.Preview;
-import androidx.camera.core.resolutionselector.AspectRatioStrategy;
-import androidx.camera.core.resolutionselector.ResolutionSelector;
-import androidx.camera.core.resolutionselector.ResolutionStrategy;
-import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
-import com.google.common.util.concurrent.ListenableFuture;
-import java.io.File;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
 
 public final class MainActivity extends ComponentActivity {
     private static final int BG = 0xff090909, PANEL = 0xff232323, ACCENT = 0xffffffff, TEXT = 0xffffffff, MUTED = 0xffbdbdbd;
     private final Handler main = new Handler(Looper.getMainLooper());
-    private final ExecutorService cameraExecutor = Executors.newSingleThreadExecutor();
+
     private final OscRepeater oscRepeater = new OscRepeater(this::sendOscPacket);
     private final ExecutorService photoExecutor = Executors.newSingleThreadExecutor();
     private final Osc.Hold hold = new Osc.Hold(this::queueOsc);
-    private final AtomicReference<CaptureRequest> pendingCapture = new AtomicReference<>();
-    private final FrameScaler frameScaler = new FrameScaler();
-    private volatile Thread analysisThread;
-    private volatile long lastAnalysisMs, lastNativeStartMs, lastNativeEndMs;
     private final CaptureSequence sequence = new CaptureSequence(new CaptureSequence.Listener() {
         @Override public void onOsc(int value) {
             if (value == 1) hold.press(config.targets(), config.address);
@@ -100,15 +77,18 @@ public final class MainActivity extends ComponentActivity {
         @Override public void onCapture() {
             android.util.Log.d("AbismoCapture", "request " + captureGeneration);
             captureStatus.setText("Capturando…");
-            pendingCapture.set(new CaptureRequest(captureGeneration, config.frontCamera));
+            final int generation = captureGeneration;
+            if (transmission != null) transmission.capture(config.frontCamera, new TransmissionService.PhotoCallback() {
+                @Override public void ready(Bitmap photo) { acceptSnapshot(generation, photo); }
+                @Override public void failed(RuntimeException error) { captureFailed(generation, error); }
+            });
         }
         @Override public void onLive() { restoreLiveView(); }
         @Override public void onTimeout() {
             android.util.Log.w("AbismoCapture", "timeout " + captureGeneration);
-            android.util.Log.w("AbismoCapture", "analysis=" + lastAnalysisMs + " native=" + lastNativeStartMs + "/" + lastNativeEndMs
-                + " now=" + SystemClock.elapsedRealtime() + " stack=" + (analysisThread == null ? "none" : java.util.Arrays.toString(analysisThread.getStackTrace())));
+            if (transmission != null) transmission.logCaptureTimeout();
             captureGeneration++;
-            pendingCapture.set(null);
+            if (transmission != null) transmission.cancelCapture();
             toast("No llegó un cuadro de cámara. Volvé a intentarlo.");
         }
     });
@@ -121,7 +101,6 @@ public final class MainActivity extends ComponentActivity {
     private Config config;
     private NdiSender ndi;
     private PreviewView previewView;
-    private ProcessCameraProvider cameraProvider;
     private TextView cameraStatus, oscStatus, ndiStatus, countdown, captureStatus, timerLabel;
     private ShutterButton trigger;
     private Button streamButton;
@@ -135,21 +114,12 @@ public final class MainActivity extends ComponentActivity {
     private View flash;
     private Uri lastPhotoUri;
     private Bitmap lastThumbnail;
-    private NsdManager nsdManager;
-    private WifiManager.MulticastLock multicastLock;
     private volatile boolean streaming;
     private boolean starting, resumed, settingsVisible, cameraReady;
-    private int cameraGeneration, captureGeneration, ndiGeneration;
+    private int captureGeneration;
     volatile long ndiFramesSent;
-    private long lastSentNs, statsStartMs;
-    private int frameCount;
     private String oscMessage = "Configurá los destinos para enviar OSC.";
     private String ndiMessage = "NDI detenido";
-    private static final class CaptureRequest {
-        final int generation;
-        final boolean mirrored;
-        CaptureRequest(int generation, boolean mirrored) { this.generation = generation; this.mirrored = mirrored; }
-    }
     private final ActivityResultLauncher<String> storagePermission = registerForActivityResult(
         new ActivityResultContracts.RequestPermission(), granted -> {
             if (granted && resumed && !settingsVisible) beginCountdown();
@@ -169,13 +139,11 @@ public final class MainActivity extends ComponentActivity {
         if (Build.VERSION.SDK_INT >= 29) getWindow().setNavigationBarContrastEnforced(false);
         config = Config.load(this);
         config.save(this);
-        // El SDK requiere mantener una instancia de NsdManager antes de crear el emisor.
-        nsdManager = (NsdManager)getSystemService(NSD_SERVICE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override public void handleOnBackPressed() {
                 if (settingsVisible) showCamera();
-                else { cancelCapture(); stopNdi(); finish(); }
+                else { cancelCapture(); moveTaskToBack(true); }
             }
         });
         showCamera();
@@ -211,34 +179,32 @@ public final class MainActivity extends ComponentActivity {
         cameraScreen = screen;
         screen.setBackgroundColor(Color.BLACK);
         setContentView(screen);
-        previewView = new PreviewView(this);
-        previewView.setImplementationMode(PreviewView.ImplementationMode.PERFORMANCE);
-        previewView.setScaleType(PreviewView.ScaleType.FILL_CENTER);
-        screen.addView(previewView, new FrameLayout.LayoutParams(-1, -1));
-        frozenFrame = new ImageView(this);
-        frozenFrame.setId(R.id.frozen_frame);
-        frozenFrame.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        frozenFrame.setVisibility(View.GONE);
-        screen.addView(frozenFrame, new FrameLayout.LayoutParams(-1, -1));
-
-        View topShade = new View(this);
-        topShade.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xaa000000, Color.TRANSPARENT}));
-        screen.addView(topShade, new FrameLayout.LayoutParams(-1, dp(180), Gravity.TOP));
-        View bottomShade = new View(this);
-        bottomShade.setBackground(new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] {0xee000000, Color.TRANSPARENT}));
-        screen.addView(bottomShade, new FrameLayout.LayoutParams(-1, dp(320), Gravity.BOTTOM));
-
-        FrameLayout controls = new FrameLayout(this);
+        LinearLayout controls = column();
         screen.addView(controls, new FrameLayout.LayoutParams(-1, -1));
         ViewCompat.setOnApplyWindowInsetsListener(controls, (view, insets) -> {
             androidx.core.graphics.Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            view.setPadding(dp(18) + bars.left, dp(6) + bars.top, dp(18) + bars.right, dp(14) + bars.bottom);
+            view.setPadding(bars.left, bars.top, bars.right, bars.bottom);
             return insets;
         });
+        FrameLayout stage = new FrameLayout(this);
+        CameraViewport viewport = new CameraViewport(this);
+        viewport.setId(R.id.camera_viewport);
+        stage.addView(viewport, new FrameLayout.LayoutParams(-1, -1, Gravity.CENTER));
+        previewView = new PreviewView(this);
+        previewView.setImplementationMode(PreviewView.ImplementationMode.PERFORMANCE);
+        previewView.setScaleType(PreviewView.ScaleType.FILL_CENTER);
+        viewport.addView(previewView, new FrameLayout.LayoutParams(-1, -1));
+        frozenFrame = new ImageView(this);
+        frozenFrame.setId(R.id.frozen_frame);
+        frozenFrame.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        frozenFrame.setVisibility(View.GONE);
+        viewport.addView(frozenFrame, new FrameLayout.LayoutParams(-1, -1));
+
         LinearLayout header = row();
         ndiIndicator = label("○ NDI", 12, MUTED);
         ndiIndicator.setId(R.id.ndi_indicator);
         ndiIndicator.setGravity(Gravity.CENTER);
+        ndiIndicator.setContentDescription(ndiMessage);
         header.addView(ndiIndicator, new LinearLayout.LayoutParams(dp(94), dp(48)));
         TextView title = label("EL ABISMO", 12, TEXT);
         title.setLetterSpacing(0.2f); title.setGravity(Gravity.CENTER); title.setTypeface(null, Typeface.BOLD);
@@ -264,7 +230,10 @@ public final class MainActivity extends ComponentActivity {
         FrameLayout settingsSlot = new FrameLayout(this);
         settingsSlot.addView(settingsButton, new FrameLayout.LayoutParams(dp(48), dp(48), Gravity.END));
         header.addView(settingsSlot, new LinearLayout.LayoutParams(dp(94), dp(48)));
-        controls.addView(header, new FrameLayout.LayoutParams(-1, -2, Gravity.TOP));
+        header.setId(R.id.camera_header);
+        header.setPadding(dp(18), dp(6), dp(18), dp(6));
+        controls.addView(header, new LinearLayout.LayoutParams(-1, -2));
+        controls.addView(stage, new LinearLayout.LayoutParams(-1, 0, 1));
 
         countdown = label("", 136, Color.WHITE);
         countdown.setId(R.id.countdown);
@@ -273,9 +242,11 @@ public final class MainActivity extends ComponentActivity {
         countdown.setShadowLayer(dp(16), 0, dp(2), 0x77000000);
         countdown.setVisibility(View.GONE);
         countdown.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
-        controls.addView(countdown, new FrameLayout.LayoutParams(-1, -2, Gravity.CENTER));
+        viewport.addView(countdown, new FrameLayout.LayoutParams(-1, -2, Gravity.CENTER));
 
         LinearLayout footer = column();
+        footer.setId(R.id.camera_footer);
+        footer.setPadding(dp(18), 0, dp(18), dp(14));
         footer.setGravity(Gravity.CENTER_HORIZONTAL);
         cameraStatus = label("Iniciando cámara…", 10, MUTED);
         cameraStatus.setGravity(Gravity.CENTER);
@@ -314,7 +285,7 @@ public final class MainActivity extends ComponentActivity {
         FrameLayout.LayoutParams timerLayout = new FrameLayout.LayoutParams(dp(48), dp(48), Gravity.END | Gravity.CENTER_VERTICAL);
         timerLayout.rightMargin = dp(22); shutterRow.addView(timerLabel, timerLayout);
         footer.addView(shutterRow, new LinearLayout.LayoutParams(-1, dp(106)));
-        TextView mode = label("FOTO", 11, TEXT); mode.setLetterSpacing(0.2f); mode.setTypeface(null, Typeface.BOLD);
+        TextView mode = label("FOTO", 11, TEXT); mode.setGravity(Gravity.CENTER); mode.setLetterSpacing(0.2f); mode.setTypeface(null, Typeface.BOLD);
         footer.addView(mode);
         cameraStatus.setPadding(0, dp(12), 0, 0);
         footer.addView(cameraStatus);
@@ -327,188 +298,86 @@ public final class MainActivity extends ComponentActivity {
         TextView ndiLink = label("NDI® · ndi.video", 10, MUTED);
         ndiLink.setGravity(Gravity.CENTER); ndiLink.setPadding(0, dp(4), 0, 0);
         footer.addView(ndiLink);
-        controls.addView(footer, new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM));
+        controls.addView(footer, new LinearLayout.LayoutParams(-1, -2));
         flash = new View(this); flash.setId(R.id.screen_flash); flash.setBackgroundColor(Color.WHITE); flash.setVisibility(View.GONE);
-        screen.addView(flash, new FrameLayout.LayoutParams(-1, -1));
+        viewport.addView(flash, new FrameLayout.LayoutParams(-1, -1));
         if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) bindCamera();
         else cameraPermission.launch(Manifest.permission.CAMERA);
     }
 
+    private TransmissionService transmission;
+    private boolean serviceBound;
+    private final android.content.ServiceConnection serviceConnection = new android.content.ServiceConnection() {
+        @Override public void onServiceConnected(android.content.ComponentName name, android.os.IBinder binder) {
+            transmission = ((TransmissionService.LocalBinder)binder).service();
+            if (resumed) transmission.attach(previewView.getSurfaceProvider(), MainActivity.this::refreshTransmission);
+            refreshTransmission();
+            if (Build.VERSION.SDK_INT >= 33 && resumed && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
+                notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
+        }
+        @Override public void onServiceDisconnected(android.content.ComponentName name) {
+            transmission = null; streaming = false; starting = false; cameraReady = false;
+            setNdiMessage("NDI detenido");
+        }
+    };
+    private final ActivityResultLauncher<String> notificationPermission = registerForActivityResult(
+        new ActivityResultContracts.RequestPermission(), granted -> { });
+
     private void bindCamera() {
-        if (settingsVisible || isDestroyed()) return;
-        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) return;
-        cameraReady = false;
-        final int generation = ++cameraGeneration;
-        ListenableFuture<ProcessCameraProvider> future = ProcessCameraProvider.getInstance(this);
-        future.addListener(() -> {
-            if (generation != cameraGeneration || settingsVisible || isDestroyed()) return;
-            try {
-                cameraProvider = future.get();
-                cameraProvider.unbindAll();
-                ResolutionSelector resolution = new ResolutionSelector.Builder()
-                    .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
-                    .setResolutionStrategy(new ResolutionStrategy(new Size(config.width, config.height), ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)).build();
-                Preview preview = new Preview.Builder().setResolutionSelector(resolution)
-                    .setTargetFrameRate(new Range<>(config.fps, config.fps)).setTargetRotation(Surface.ROTATION_0).build();
-                preview.setSurfaceProvider(previewView.getSurfaceProvider());
-                ImageAnalysis analysis = new ImageAnalysis.Builder()
-                    .setResolutionSelector(resolution)
-                    .setTargetRotation(Surface.ROTATION_0)
-                    .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888)
-                    .setOutputImageRotationEnabled(true)
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build();
-                analysis.setAnalyzer(cameraExecutor, this::analyze);
-                CameraSelector selector = config.frontCamera ? CameraSelector.DEFAULT_FRONT_CAMERA : CameraSelector.DEFAULT_BACK_CAMERA;
-                cameraProvider.bindToLifecycle(this, selector, preview, analysis);
-                cameraReady = true;
-                cameraStatus.setText((config.frontCamera ? "Frontal" : "Trasera") + " · vista previa · sin audio");
-                if (resumed && ndiWanted && !streaming && !starting) startNdi();
-            } catch (Exception failure) {
-                cameraStatus.setText("No se pudo abrir la cámara. Tocá para reintentar.");
-                toast("Cámara: " + failure.getMessage());
-            }
-        }, ContextCompat.getMainExecutor(this));
+        if (!resumed || isDestroyed() || checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) return;
+        if (transmission != null) {
+            transmission.configure(config, true, false);
+            transmission.attach(previewView.getSurfaceProvider(), this::refreshTransmission);
+            return;
+        }
+        if (serviceBound) return;
+        try {
+            Intent service = new Intent(this, TransmissionService.class);
+            ContextCompat.startForegroundService(this, service);
+            serviceBound = bindService(service, serviceConnection, BIND_AUTO_CREATE);
+        } catch (RuntimeException error) { cameraStatus.setText("No se pudo iniciar la cámara: " + error.getMessage()); }
     }
 
-    private void analyze(ImageProxy image) {
-        analysisThread = Thread.currentThread(); lastAnalysisMs = SystemClock.elapsedRealtime();
-        try {
-            // Copiar un único cuadro antes de liberarlo. El bitmap local nunca se
-            // escribe en el buffer original que consume NDI.
-            CaptureRequest request = pendingCapture.getAndSet(null);
-            long now = System.nanoTime();
-            long interval = (long)(1_000_000_000.0 / config.fps * 0.9);
-            boolean send = streaming && ndi != null && now - lastSentNs >= interval;
-            if (!send && request == null) return;
-            ImageProxy.PlaneProxy plane = image.getPlanes()[0];
-            if (plane.getPixelStride() != 4) throw new IllegalStateException("La cámara no produjo RGBA.");
-            int outWidth = config.height, outHeight = config.width;
-            ByteBuffer frame = plane.getBuffer();
-            int stride = plane.getRowStride();
-            boolean scaled = image.getWidth() != outWidth || image.getHeight() != outHeight;
-            if (scaled) {
-                frame = frameScaler.scale(frame, image.getWidth(), image.getHeight(), stride, outWidth, outHeight);
-                stride = outWidth * 4;
-            }
-            if (request != null) {
-                android.util.Log.d("AbismoCapture", "copy " + request.generation);
-                try {
-                    // CameraX puede avanzar el cursor al copiar; NDI necesita
-                    // recibir el buffer original desde su posición inicial.
-                    ByteBuffer pixels = image.getPlanes()[0].getBuffer();
-                    int position = pixels.position(), limit = pixels.limit();
-                    Bitmap original;
-                    try {
-                        if (scaled) {
-                            original = Bitmap.createBitmap(outWidth, outHeight, Bitmap.Config.ARGB_8888);
-                            original.copyPixelsFromBuffer(frame.duplicate());
-                        } else original = image.toBitmap();
-                    }
-                    finally { pixels.limit(limit); pixels.position(position); }
-                    photoExecutor.execute(() -> {
-                        try {
-                            Bitmap photo = original;
-                            if (request.mirrored) {
-                                Matrix mirror = new Matrix(); mirror.setScale(-1f, 1f);
-                                photo = Bitmap.createBitmap(original, 0, 0, original.getWidth(), original.getHeight(), mirror, false);
-                            }
-                            Bitmap ready = photo;
-                            main.post(() -> acceptSnapshot(request.generation, ready));
-                        } catch (RuntimeException failure) {
-                            main.post(() -> captureFailed(request.generation, failure));
-                        }
-                    });
-                } catch (RuntimeException failure) {
-                    main.post(() -> captureFailed(request.generation, failure));
-                }
-            }
-            if (!send) return;
-            lastSentNs = now;
-            lastNativeStartMs = SystemClock.elapsedRealtime();
-            ndi.send(frame, outWidth, outHeight, stride);
-            lastNativeEndMs = SystemClock.elapsedRealtime();
-            ndiFramesSent++;
-            frameCount++;
-            long elapsed = SystemClock.elapsedRealtime() - statsStartMs;
-            if (elapsed >= 1000) {
-                double fps = frameCount * 1000.0 / elapsed;
-                int receivers = ndi.connections();
-                String status = String.format(Locale.US, "%d × %d · %.1f fps · %d receptor(es)", outWidth, outHeight, fps, receivers);
-                main.post(() -> { if (streaming && !settingsVisible) cameraStatus.setText(status); });
-                frameCount = 0;
-                statsStartMs = SystemClock.elapsedRealtime();
-            }
-        } catch (RuntimeException | LinkageError error) {
-            streaming = false;
-            if (ndi != null) ndi.stop();
-            main.post(() -> { stopNdi(); setNdiMessage("Error de transmisión · " + error.getMessage()); });
-        } finally { image.close(); }
+    private static void updateText(TextView view, String text) {
+        if (view == null) return;
+        String safe = text == null ? "" : text;
+        CharSequence current = view.getText();
+        if (current == null || !safe.contentEquals(current)) view.setText(safe);
+    }
+
+    private void refreshTransmission() {
+        if (transmission == null || isDestroyed()) return;
+        cameraReady = transmission.cameraReady; streaming = transmission.streaming; starting = transmission.starting;
+        ndiWanted = transmission.wanted; ndiFramesSent = transmission.frames; ndi = transmission.ndi;
+        setNdiMessage(transmission.message);
+        if (cameraStatus != null && !settingsVisible) updateText(cameraStatus, transmission.cameraMessage);
+        if (streamButton != null) {
+            streamButton.setEnabled(!starting);
+            updateText(streamButton, streaming ? "Detener NDI" : "Iniciar NDI");
+        }
     }
 
     private void startNdi() {
-        if (!cameraReady) { toast("Primero habilitá la cámara."); return; }
-        if (!new File(getApplicationInfo().nativeLibraryDir, "libndi.so").isFile()) {
-            new AlertDialog.Builder(this).setTitle("Falta el SDK de NDI")
-                .setMessage("Esta compilación permite probar cámara y OSC. Para transmitir video hay que incorporar libndi.so del SDK oficial para Android y recompilar el APK.\n\nNDI® is a registered trademark of Vizrt NDI AB.")
-                .setPositiveButton("Entendido", null)
-                .setNeutralButton("Obtener SDK", (d, w) -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://ndi.video/for-developers/ndi-sdk/download/")))).show();
-            return;
-        }
-        starting = true;
-        final int generation = ++ndiGeneration;
-        if (streamButton != null) streamButton.setEnabled(false);
-        setNdiMessage("Iniciando NDI…");
-        WifiManager wifi = (WifiManager)getApplicationContext().getSystemService(WIFI_SERVICE);
-        if (wifi != null) {
-            multicastLock = wifi.createMulticastLock("abismo-ndi-discovery");
-            multicastLock.setReferenceCounted(false);
-            multicastLock.acquire();
-        }
-        String sourceName = config.sourceName;
-        int fps = config.fps;
-        boolean multicast = config.ndiMulticast;
-        File ndiConfigDirectory = new File(getFilesDir(), "ndi");
-        cameraExecutor.execute(() -> {
-            String error = null;
-            try { if (ndi == null) ndi = new NdiSender(); ndi.start(sourceName, fps, ndiConfigDirectory, multicast); }
-            catch (RuntimeException | LinkageError failure) { error = failure.toString(); }
-            String failureText = error;
-            main.post(() -> {
-                if (generation != ndiGeneration || isDestroyed()) return;
-                if (!starting || !resumed || !ndiWanted) { stopNdi(); return; }
-                starting = false;
-                if (streamButton != null) streamButton.setEnabled(true);
-                if (failureText != null) { stopNdi(); setNdiMessage("NDI no disponible"); toast(failureText); return; }
-                lastSentNs = 0;
-                frameCount = 0;
-                statsStartMs = SystemClock.elapsedRealtime();
-                streaming = true;
-                if (streamButton != null) streamButton.setText("Detener NDI");
-                setNdiMessage("● NDI activo · " + (multicast ? "Multicast habilitado" : "Unicast") + "\n" + sourceName);
-            });
-        });
+        if (transmission != null) { transmission.configure(config, false, false); transmission.setWanted(true); refreshTransmission(); }
     }
-
     private void stopNdi() {
-        ndiGeneration++;
-        starting = false;
-        streaming = false;
-        if (!cameraExecutor.isShutdown()) cameraExecutor.execute(() -> { if (ndi != null) ndi.stop(); });
-        if (multicastLock != null && multicastLock.isHeld()) multicastLock.release();
-        multicastLock = null;
-        setNdiMessage("NDI detenido");
-        if (streamButton != null) { streamButton.setText("Iniciar NDI"); streamButton.setEnabled(true); }
+        if (transmission != null) { transmission.stopSender(); refreshTransmission(); }
     }
 
     private void setNdiMessage(String message) {
-        ndiMessage = message;
-        if (ndiStatus != null) ndiStatus.setText(message);
-        if (ndiIndicator != null) { ndiIndicator.setText(streaming ? "● NDI" : "○ NDI"); ndiIndicator.setContentDescription(message); }
+        String safe = message == null ? "" : message;
+        ndiMessage = safe;
+        updateText(ndiStatus, safe);
+        if (ndiIndicator != null) {
+            updateText(ndiIndicator, streaming ? "● NDI" : "○ NDI");
+            CharSequence currentDesc = ndiIndicator.getContentDescription();
+            if (currentDesc == null || !safe.contentEquals(currentDesc)) ndiIndicator.setContentDescription(safe);
+        }
     }
 
     private void queueOsc(List<Osc.Destination> targets, String address, int value) {
         if (config.countdownSeconds == 0) {
-            // El 0 de la captura inmediata ya queda programado después de los cinco 1.
+            // El 0 de la captura inmediata ya queda programado después de los diez 1.
             if (value == 1) oscRepeater.sendPulse(targets, address, config.oscIntervalMs);
         } else oscRepeater.send(targets, address, value, config.oscIntervalMs);
     }
@@ -543,7 +412,7 @@ public final class MainActivity extends ComponentActivity {
 
     private void acceptSnapshot(int generation, Bitmap photo) {
         android.util.Log.d("AbismoCapture", "ready " + generation + " current=" + captureGeneration + " state=" + sequence.state());
-        if (generation != captureGeneration || !resumed || settingsVisible || isDestroyed()) return;
+        if (generation != captureGeneration || !resumed || settingsVisible || isDestroyed()) { photo.recycle(); return; }
         if (!sequence.frameReady(SystemClock.elapsedRealtime())) return;
         frozenFrame.setImageBitmap(photo);
         frozenFrame.setVisibility(View.VISIBLE);
@@ -579,7 +448,7 @@ public final class MainActivity extends ComponentActivity {
     }
 
     private void restoreLiveView() {
-        pendingCapture.set(null);
+        if (transmission != null) transmission.cancelCapture();
         if (frozenFrame != null) { frozenFrame.setVisibility(View.GONE); frozenFrame.setImageDrawable(null); }
         if (flash != null) { flash.animate().cancel(); flash.setVisibility(View.GONE); }
         if (trigger != null) trigger.setEnabled(true);
@@ -600,7 +469,7 @@ public final class MainActivity extends ComponentActivity {
 
     private void cancelCapture() {
         captureGeneration++;
-        pendingCapture.set(null);
+        if (transmission != null) transmission.cancelCapture();
         main.removeCallbacks(countdownTick);
         sequence.cancel();
         if (trigger != null) trigger.cancelTouch();
@@ -630,11 +499,30 @@ public final class MainActivity extends ComponentActivity {
         LinearLayout content = column();
         scroll.addView(content);
         content.addView(section("01 / CÁMARA"));
-        content.addView(label("Fuente NDI: abismoCam", 14, TEXT));
+        TextView sourceLabel = label("Fuente NDI: " + config.sourceName(), 14, TEXT);
+        sourceLabel.setId(R.id.ndi_source_name);
+        content.addView(sourceLabel);
+        EditText sourceIdentifier = input(content, "Identificador del teléfono", config.sourceIdentifier, false);
+        sourceIdentifier.setId(R.id.ndi_source_identifier);
+        sourceIdentifier.setHint("Ejemplo: Li");
+        content.addView(label("Elegí uno distinto para cada teléfono. Se aplica al guardar, conservando el número. Sin identificador: abismoCam_0001.", 12, MUTED));
+        Button renewSource = button("Renovar fuente NDI", false);
+        renewSource.setId(R.id.ndi_renew_source);
+        content.addView(renewSource, spaced(-1, 56));
+        content.addView(label("Renovar incrementa y guarda el número inmediatamente, usando el identificador ya guardado. Si NDI está activo, se reinicia con el nombre nuevo; si está detenido, permanece detenido. Seleccioná la nueva fuente en los receptores.", 12, MUTED));
+        renewSource.setOnClickListener(v -> {
+            boolean restart = streaming || starting;
+            stopNdi();
+            config.renewSource();
+            config.save(this);
+            if (transmission != null) transmission.configure(config, false, false);
+            sourceLabel.setText("Fuente NDI: " + config.sourceName());
+            if (restart && ndiWanted && resumed) startNdi();
+        });
         streamButton = button(streaming ? "Detener NDI" : "Iniciar NDI", false);
         streamButton.setId(R.id.ndi_toggle);
         streamButton.setEnabled(!starting);
-        streamButton.setOnClickListener(v -> { ndiWanted = !(streaming || starting); if (ndiWanted) startNdi(); else stopNdi(); });
+        streamButton.setOnClickListener(v -> { if (transmission != null) { transmission.setWanted(!(streaming || starting)); refreshTransmission(); } });
         content.addView(streamButton);
         content.addView(label("Transporte NDI", 13, TEXT));
         android.widget.Spinner transport = new android.widget.Spinner(this);
@@ -648,8 +536,8 @@ public final class MainActivity extends ComponentActivity {
         content.addView(label("Resolución", 13, TEXT));
         android.widget.Spinner resolution = new android.widget.Spinner(this);
         resolution.setId(R.id.resolution);
-        resolution.setAdapter(new android.widget.ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new String[] {"nHD · 640 × 360", "qHD · 960 × 540", "HD · 1280 × 720"}));
-        resolution.setSelection(config.width == 640 ? 0 : config.width == 960 ? 1 : 2);
+        resolution.setAdapter(new android.widget.ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new String[] {"Baja · 360 × 640", "Media · 540 × 960", "Alta · 720 × 1280"}));
+        resolution.setSelection(config.width == 360 ? 0 : config.width == 540 ? 1 : 2);
         content.addView(resolution);
         content.addView(label("Fotogramas por segundo", 13, TEXT));
         android.widget.Spinner fpsChoice = new android.widget.Spinner(this);
@@ -657,7 +545,7 @@ public final class MainActivity extends ComponentActivity {
         fpsChoice.setAdapter(new android.widget.ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new String[] {"15 fps", "30 fps"}));
         fpsChoice.setSelection(config.fps == 15 ? 0 : 1);
         content.addView(fpsChoice);
-        content.addView(label("Video vertical: se intercambian ancho y alto. Cambiar cámara, resolución o FPS reinicia brevemente el video al guardar.", 12, MUTED));
+        content.addView(label("Formato vertical 9:16. La vista previa, NDI y la foto comparten el mismo encuadre; las bandas negras no se transmiten ni se guardan. Cambiar cámara, resolución o FPS reinicia brevemente el video al guardar.", 12, MUTED));
         content.addView(label("Cuenta regresiva", 13, TEXT));
         android.widget.Spinner countdownChoice = new android.widget.Spinner(this);
         countdownChoice.setId(R.id.countdown_seconds);
@@ -676,8 +564,8 @@ public final class MainActivity extends ComponentActivity {
             new String[] {"10 ms", "25 ms", "50 ms", "100 ms"}));
         oscInterval.setSelection(config.oscIntervalMs == 10 ? 0 : config.oscIntervalMs == 25 ? 1 : config.oscIntervalMs == 100 ? 3 : 2);
         content.addView(oscInterval);
-        content.addView(label("Cada valor (1 y 0) se envía 5 veces. El primero sale inmediatamente. Configurá los receptores para actuar solo al cambiar el valor, sin repetir acciones por cada mensaje.", 12, MUTED));
-        content.addView(label("OSC 1 al comenzar y OSC 0 al finalizar la cuenta. Con 0 s: cinco 1 seguidos de cinco 0, sin retrasar la foto. Flash y foto congelada 1 s solo en pantalla.", 13, ACCENT));
+        content.addView(label("Cada valor (1 y 0) se envía 10 veces. El primero sale inmediatamente. Configurá los receptores para actuar solo al cambiar el valor, sin repetir acciones por cada mensaje.", 12, MUTED));
+        content.addView(label("OSC 1 al comenzar y OSC 0 al finalizar la cuenta. Con 0 s: diez 1 seguidos de diez 0, sin retrasar la foto. Flash y foto congelada 1 s solo en pantalla.", 13, ACCENT));
         content.addView(label("Las fotos se guardan en Pictures/AbismoCam. Frontal espejada en pantalla y foto; NDI siempre sin espejo.", 12, MUTED));
         content.addView(section("03 / DESTINOS"));
         RadioGroup mode = new RadioGroup(this);
@@ -719,37 +607,41 @@ public final class MainActivity extends ComponentActivity {
         content.addView(save, spaced(-1, 56));
         save.setOnClickListener(v -> {
             try {
+                String identifierText = SourceIdentity.identifier(sourceIdentifier.getText().toString());
                 String addressText = address.getText().toString().trim();
                 Osc.validateAddress(addressText);
                 String ipText = ip.getText().toString().trim();
                 boolean isBroadcast = mode.getCheckedRadioButtonId() == R.id.mode_broadcast;
                 if (isBroadcast || !ipText.isEmpty()) Osc.ipv4(ipText);
                 int portValue = parsePort(port);
-                int width = new int[] {640, 960, 1280}[resolution.getSelectedItemPosition()];
+                int width = new int[] {360, 540, 720}[resolution.getSelectedItemPosition()];
                 int fps = fpsChoice.getSelectedItemPosition() == 0 ? 15 : 30;
                 boolean reconfigure = config.width != width || config.fps != fps || config.frontCamera != front.isChecked();
                 boolean transportChanged = config.ndiMulticast != (transport.getSelectedItemPosition() == 1);
-                if (reconfigure || transportChanged) stopNdi();
+                boolean sourceChanged = !config.sourceIdentifier.equals(identifierText);
+                boolean restartSource = sourceChanged && (streaming || starting);
+                if (reconfigure || transportChanged || sourceChanged) stopNdi();
                 config.ndiMulticast = transport.getSelectedItemPosition() == 1;
-                config.sourceName = "abismoCam"; config.address = addressText;
+                config.sourceIdentifier = identifierText; config.address = addressText;
                 config.broadcast = isBroadcast; config.broadcastIp = ipText; config.broadcastPort = portValue;
                 config.frontCamera = front.isChecked();
                 config.width = width;
-                config.height = width * 9 / 16;
+                config.height = width * 16 / 9;
                 config.fps = fps;
                 config.countdownSeconds = countdownChoice.getSelectedItemPosition();
                 config.oscIntervalMs = new int[] {10, 25, 50, 100}[oscInterval.getSelectedItemPosition()];
                 config.destinations.clear(); config.destinations.addAll(draft);
                 config.save(this);
+                if (transmission != null) transmission.configure(config, false, false);
                 oscMessage = "Configuración guardada. Listo para probar OSC.";
                 showCamera();
                 oscStatus.setText(targetSummary());
                 if (reconfigure) bindCamera();
-                else if (transportChanged && ndiWanted) startNdi();
+                else if ((transportChanged || restartSource) && ndiWanted) startNdi();
             } catch (IllegalArgumentException invalid) { error.setText(invalid.getMessage()); }
         });
         content.addView(section("ACERCA DE ESTA PRUEBA"));
-        content.addView(label("abismoCam · 0.6.0 · Lisandro Peralta\nNDI automático al abrir. Continúa durante el conteo, la foto y los ajustes. Se detiene al salir de la app. OSC no tiene confirmación de recepción.\nNDI® is a registered trademark of Vizrt NDI AB.", 12, MUTED));
+        content.addView(label("abismoCam · 0.9.0 · Lisandro Peralta\nNDI automático al abrir. Continúa durante el conteo, la foto y los ajustes. Continúa en segundo plano y con pantalla bloqueada. Se detiene al quitar la app de recientes. OSC no tiene confirmación de recepción.\nNDI® is a registered trademark of Vizrt NDI AB.", 12, MUTED));
         Button ndiInfo = button("NDI® · ndi.video", false);
         ndiInfo.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://ndi.video"))));
         content.addView(ndiInfo);
@@ -828,17 +720,21 @@ public final class MainActivity extends ComponentActivity {
 
     @Override protected void onResume() {
         super.onResume(); resumed = true;
-        if (cameraReady && ndiWanted && !streaming && !starting) startNdi();
-        if (config != null && !settingsVisible && !cameraReady && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) bindCamera();
+        if (transmission != null) transmission.attach(previewView.getSurfaceProvider(), this::refreshTransmission);
+        else if (config != null && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) bindCamera();
     }
-    @Override protected void onPause() { main.removeCallbacks(openSettings); resumed = false; cancelCapture(); stopNdi(); super.onPause(); }
+    @Override protected void onPause() { main.removeCallbacks(openSettings); resumed = false; cancelCapture(); super.onPause(); }
+    @Override protected void onStop() {
+        if (transmission != null) transmission.detach();
+        super.onStop();
+    }
     @Override public void onWindowFocusChanged(boolean focus) { super.onWindowFocusChanged(focus); if (!focus) { main.removeCallbacks(openSettings); if (trigger != null) trigger.cancelTouch(); } }
     @Override protected void onDestroy() {
-        cancelCapture(); stopNdi(); cameraGeneration++;
-        if (cameraProvider != null) cameraProvider.unbindAll();
-        // Esperar los callbacks de cámara antes de cerrar el executor de fotos.
-        cameraExecutor.execute(() -> { if (ndi != null) ndi.close(); photoExecutor.shutdown(); });
-        cameraExecutor.shutdown(); oscRepeater.close();
+        cancelCapture();
+        if (transmission != null) transmission.detach();
+        if (serviceBound) { unbindService(serviceConnection); serviceBound = false; }
+        transmission = null;
+        photoExecutor.shutdown(); oscRepeater.close();
         main.removeCallbacksAndMessages(null);
         super.onDestroy();
     }

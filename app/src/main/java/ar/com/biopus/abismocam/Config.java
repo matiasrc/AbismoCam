@@ -9,14 +9,19 @@ import java.util.Collections;
 import java.util.List;
 
 final class Config {
-    String sourceName = "abismoCam";
+    String sourceIdentifier = "";
+    java.math.BigInteger sourceCounter = java.math.BigInteger.ONE;
+
+    String sourceName() { return SourceIdentity.name(sourceIdentifier, sourceCounter); }
+
+    void renewSource() { sourceCounter = sourceCounter.add(java.math.BigInteger.ONE); }
     String address = "/camara/disparo";
     boolean broadcast = false;
     String broadcastIp = "";
     int broadcastPort = 9000;
     boolean frontCamera = true;
-    int width = 960;
-    int height = 540;
+    int width = 540;
+    int height = 960;
     int fps = 30;
     boolean ndiMulticast = false;
     int oscIntervalMs = 50;
@@ -36,7 +41,9 @@ final class Config {
         String json = context.getSharedPreferences("config", Context.MODE_PRIVATE).getString("json", "{}");
         try {
             JSONObject obj = new JSONObject(json);
-            config.sourceName = "abismoCam";
+            try { config.sourceIdentifier = SourceIdentity.identifier(obj.optString("sourceIdentifier", "")); }
+            catch (IllegalArgumentException invalidName) { config.sourceIdentifier = ""; }
+            config.sourceCounter = SourceIdentity.counter(obj.optString("sourceCounter", "1"));
             config.ndiMulticast = obj.optBoolean("ndiMulticast", false);
             config.oscIntervalMs = OscRepeater.validInterval(obj.optInt("oscIntervalMs", 50));
             int countdown = obj.optInt("countdownSeconds", 5);
@@ -51,9 +58,11 @@ final class Config {
             // La primera actualización a la interfaz de selfie empieza con la frontal.
             config.frontCamera = obj.optInt("schemaVersion", 1) < 2 || obj.optBoolean("frontCamera", true);
             if (obj.optInt("schemaVersion", 1) >= 3) {
-                int width = obj.optInt("width", 960);
-                config.width = width == 640 || width == 1280 ? width : 960;
-                config.height = config.width * 9 / 16;
+                int width = obj.optInt("width", 540);
+                if (width == 360 || width == 384 || width == 640) config.width = 360;
+                else if (width == 720 || width == 768 || width == 1280) config.width = 720;
+                else config.width = 540;
+                config.height = config.width * 16 / 9;
                 config.fps = obj.optInt("fps", 30) == 15 ? 15 : 30;
             }
             JSONArray list = obj.optJSONArray("destinations");
@@ -68,7 +77,9 @@ final class Config {
     void save(Context context) {
         try {
             JSONObject obj = new JSONObject();
-            obj.put("schemaVersion", 3).put("sourceName", sourceName).put("address", address).put("broadcast", broadcast)
+            obj.put("schemaVersion", 5).put("sourceName", sourceName())
+                .put("sourceIdentifier", sourceIdentifier).put("sourceCounter", sourceCounter.toString())
+                .put("address", address).put("broadcast", broadcast)
                 .put("broadcastIp", broadcastIp).put("broadcastPort", broadcastPort)
                 .put("frontCamera", frontCamera).put("width", width).put("fps", fps).put("ndiMulticast", ndiMulticast)
                 .put("oscIntervalMs", oscIntervalMs).put("countdownSeconds", countdownSeconds);
