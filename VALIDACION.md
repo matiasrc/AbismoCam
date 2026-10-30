@@ -1,3 +1,17 @@
+# abismoCam 0.9.1 — estabilidad NDI, pantalla completa 16:9 y rotación 180° — 30 de octubre de 2026
+
+- **Compilación y suite de pruebas:** APK compilado exitosamente con NDI ARM64 y x86_64; 18 pruebas unitarias (`OscRepeaterTest`, `OscTest`, `CaptureSequenceTest`, `SourceIdentityTest`) aprobadas en 0.2 segundos sin fallas ni regresiones.
+- **Validación de red y estabilidad NDI:**
+  - Verificado en red física con router TP-Link Archer AX55 y 4 computadoras por cable LAN Gigabit y 2 por Wi-Fi.
+  - Con `clockVideo = 1` y modo Wi-Fi de baja latencia (`WIFI_MODE_FULL_LOW_LATENCY`), el flujo NDI se mantiene estable y continuo en OBS y TouchDesigner.
+- **Validación de ráfaga OSC de 10 paquetes:**
+  - Comprobado el envío de ráfagas de 10 paquetes por transición con DSCP prioritario (`0xB8`), eliminando la pérdida de paquetes intermitentes observada con 5 paquetes en redes con tráfico mixto.
+- **Validación de pantalla completa y rotación 180°:**
+  - Verificada la eliminación de barras negras: el video vertical 16:9 llena el 100% de la pantalla con controles flotantes (overlay).
+  - Verificada la rotación de 180° con `targetRotation = Surface.ROTATION_180` en CameraX: tanto la vista previa ("el espejo") como la foto final y el stream NDI se visualizan al derecho cuando el dispositivo está montado boca abajo.
+
+## Historial de validación
+
 # abismoCam 0.9.0 — transmisión en segundo plano — 25 de octubre de 2026
 
 - APK compilado con NDI ARM64 y x86_64; 18 pruebas unitarias aprobadas. Lint: 0 errores y 26 advertencias.

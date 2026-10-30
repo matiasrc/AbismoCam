@@ -1,10 +1,10 @@
 # abismoCam · MVP Android
 
-Cámara para **El abismo de la visibilidad**, Lisandro Peralta. Versión 0.9.0. Samsung A51 como dispositivo objetivo; Android 8 o posterior, ARM64. Interfaz en español, orientación vertical, cámara frontal por defecto, sin micrófono. Guarda fotografías, no graba video.
+Cámara para **El abismo de la visibilidad**, Lisandro Peralta. Versión 0.9.1. Samsung A51 como dispositivo objetivo; Android 8 o posterior, ARM64. Interfaz en español, orientación vertical, cámara frontal por defecto, sin micrófono. Guarda fotografías, no graba video.
 
 ## Estado
 
-El APK de `entregables` incorpora las bibliotecas oficiales `libndi.so` del SDK NDI para Android, en ARM64 para el teléfono y x86_64 para el emulador. La cámara, NDI High Bandwidth y OSC están implementados. Falta validar la recepción y el rendimiento en el Samsung A51 y la red de la instalación. Las licencias del SDK se conservan en `licenses/ndi/`.
+El APK de `entregables` incorpora las bibliotecas oficiales `libndi.so` del SDK NDI para Android, en ARM64 para el teléfono y x86_64 para el emulador. La cámara, NDI High Bandwidth (con temporización `clockVideo = 1`, modo Wi-Fi de baja latencia y reconexión limpia de red) y OSC de alta prioridad están implementados. Las licencias del SDK se conservan en `licenses/ndi/`.
 
 El SDK utilizado se instaló en `C:/Users/lisan/AppData/Local/NDI-SDK-Android`. Las bibliotecas `.so` están excluidas de Git; si se copia el proyecto sin ellas, hay que incorporarlas nuevamente con las instrucciones de abajo.
 
@@ -16,11 +16,11 @@ El SDK utilizado se instaló en `C:/Users/lisan/AppData/Local/NDI-SDK-Android`. 
    - **Computadoras individuales**: nombre, IPv4 y puerto por receptor; se puede habilitar, editar o eliminar cada destino.
    - **Broadcast**: dirección de broadcast y puerto común. Detectar broadcast calcula la dirección de una interfaz local Wi-Fi/Ethernet. Revisarla si hay varias interfaces. No funciona a través de subredes o redes que lo bloqueen.
 4. Configurar los receptores para escuchar OSC UDP en el puerto elegido, en su interfaz de red o `0.0.0.0`, no solamente en `127.0.0.1`.
-5. Soltar el disparador circular inicia la cuenta configurada: **5 segundos por defecto**, elegible de **0 a 15 segundos** en pasos de uno. Envía `/camara/disparo` con tipo OSC `,i` y entero `1` al comenzar y `0` al terminar. Con **0 s** solicita la foto al soltar, sin mostrar números; OSC envía cinco `1` y después cinco `0`, como se detalla abajo. La ruta es configurable. Mantener el dedo apoyado no inicia nada; los toques adicionales se bloquean hasta volver a la cámara en vivo.
+5. Soltar el disparador circular inicia la cuenta configurada: **5 segundos por defecto**, elegible de **0 a 15 segundos** en pasos de uno. Envía `/camara/disparo` con tipo OSC `,i` y entero `1` al comenzar y `0` al terminar. Con **0 s** solicita la foto al soltar, sin mostrar números; OSC envía diez `1` y después diez `0`, como se detalla abajo. La ruta es configurable. Mantener el dedo apoyado no inicia nada; los toques adicionales se bloquean hasta volver a la cámara en vivo.
 6. Al terminar: flash blanco breve, foto congelada durante un segundo y regreso automático al video. La foto se guarda como JPEG en **Pictures/AbismoCam** y aparece una miniatura para abrirla. La cámara frontal y su foto se muestran espejadas.
 7. NDI comienza automáticamente al abrir la app con permiso de cámara. Seleccionar en los receptores el nombre indicado en ajustes, por ejemplo **abismoCam_Li_0001**. El indicador de la pantalla principal no responde a toques; activar o detener NDI solo está disponible dentro de ajustes. Cada receptor necesita soporte NDI High Bandwidth.
 
-**NDI continúa enviando la cámara original en vivo durante el conteo, flash, congelado y guardado.** Esos efectos solo aparecen en el teléfono; NDI no lleva espejo ni superposiciones. La foto usa el siguiente cuadro disponible al terminar el conteo, a la resolución del video configurado. La ventana de cámara muestra el mismo encuadre 4:5 que sale por NDI y se guarda en la foto, con espejo solo en la vista frontal y su fotografía.
+**NDI continúa enviando la cámara original en vivo durante el conteo, flash, congelado y guardado.** Esos efectos solo aparecen en el teléfono; NDI no lleva espejo ni superposiciones. La foto usa el siguiente cuadro disponible al terminar el conteo, a la resolución del video configurado. La vista de cámara muestra un encuadre vertical 16:9 a pantalla completa que coincide con lo que sale por NDI y se guarda en la foto, con espejo solo en la vista frontal y su fotografía.
 
 ## Transmisión en segundo plano
 
@@ -42,19 +42,27 @@ Cambiar el identificador y guardar conserva el contador y recrea la fuente cuand
 
 Los receptores pueden necesitar seleccionar la fuente nueva. Renovar no elimina entradas antiguas de sus listas ni garantiza recuperar un bloqueo interno del SDK, la cámara o la red. El botón mantiene las operaciones de cierre y creación en orden; si una llamada nativa no retorna, la renovación también puede quedar esperando. La app sigue llamándose **abismoCam**.
 
-## Encuadre y resolución 4:5
+## Encuadre vertical 16:9 a pantalla completa y resoluciones seleccionables
 
-La cámara muestra una ventana vertical **4:5**, con bandas negras para separar la imagen de los controles. El encabezado y el engranaje quedan arriba; el disparador y la información de resolución, FPS, NDI y OSC quedan debajo. En pantallas más bajas, la ventana se reduce para mostrar el encuadre completo sin taparlo con botones. Las bandas, textos, cuenta y flash son locales: no aparecen en NDI ni en el JPEG.
+La cámara muestra una vista vertical **16:9 (9:16) a pantalla completa (Edge-to-edge)**, sin bandas negras intermedias. Los controles (título, estado NDI, botón de ajustes, disparador, miniatura y estados) flotan **por encima del video** con sombreados en degradé sutiles para asegurar legibilidad en cualquier iluminación, similar a la app de cámara nativa de un celular. Las superposiciones, textos, cuenta y flash son locales: no aparecen en NDI ni en el archivo JPEG.
 
-| Calidad | Ancho × alto de NDI y foto |
-| --- | --- |
-| Baja | 384 × 480 |
-| Media (predeterminada) | 576 × 720 |
-| Alta | 768 × 960 |
+| Calidad | Denominación | Ancho × alto de NDI y foto |
+| --- | --- | --- |
+| nHD | Baja | 360 × 640 |
+| qHD | Media (predeterminada) | 540 × 960 |
+| HD | Alta | 720 × 1280 |
 
-Los FPS se eligen por separado: **15 o 30**, con **30 por defecto**. Las dimensiones ya están expresadas en orientación vertical; no se intercambian. Se recorta el sensor al centro para obtener 4:5 y se escala sin deformar. CameraX comparte el área de sensor entre la vista previa y el análisis utilizado por NDI y la foto. La cámara frontal conserva el espejo en pantalla y en el JPEG; NDI sigue sin espejo.
+Los FPS se eligen por separado: **15 o 30**, con **30 por defecto**. Las dimensiones corresponden a la orientación vertical. CameraX comparte el área de sensor entre la vista previa y el análisis utilizado por NDI y la foto, asegurando encuadre idéntico sin deformación. La cámara frontal conserva el espejo en pantalla y en el JPEG; NDI se transmite sin espejo.
 
-Al actualizar se conserva el nivel de calidad: nHD pasa a Baja, qHD a Media y HD a Alta. También se conservan FPS, cámara, transporte NDI, cuenta regresiva y configuración OSC. Una instalación nueva usa Media a 30 fps. Los FPS efectivos dependen del teléfono y la red.
+Al actualizar se conservan FPS, cámara, transporte NDI, cuenta regresiva y configuración OSC. Una instalación nueva usa qHD (Media) a 30 fps. Los FPS efectivos dependen del teléfono y la red.
+
+## Rotación 180° para montaje invertido (boca abajo)
+
+En **Configuración → Cámara**, la casilla **Rotar 180° (montaje invertido)** permite instalar el teléfono boca abajo (de cabeza) cuando el montaje físico o el cableado lo requiera:
+
+- **Vista previa y stream NDI:** CameraX orienta nativamente el flujo de video en `Surface.ROTATION_180` por software, por lo que el video se ve al derecho tanto en la pantalla del celular como en los receptores remotos (TouchDesigner / OBS).
+- **Interfaz de usuario:** Los botones, disparador, degradés y textos giran 180° para quedar perfectamente orientados y legibles para el usuario con el celular invertido.
+- **Fotografía y miniatura:** La captura guardada en galería y el fotograma congelado en pantalla se sincronizan con la orientación de 180°, mostrándose siempre al derecho.
 
 ## Cuenta regresiva configurable
 
@@ -85,9 +93,9 @@ Referencias: [configuración SDK](https://docs.ndi.video/all/developing-with-ndi
 
 ## Verificar OSC desde Windows
 
-Desde 0.5.0, cada valor (`1` y `0`) se envía **cinco veces**, con el primero inmediato y **50 ms** entre mensajes por defecto: instantes 0, 50, 100, 150 y 200 ms. En ajustes se elige **10, 25, 50 o 100 ms**, que abarcan 40, 100, 200 o 400 ms respectivamente. La selección se aplica al guardar y persiste sin reiniciar NDI; instalaciones anteriores adoptan 50 ms manteniendo sus otros ajustes.
+Cada valor (`1` y `0`) se envía **diez veces** (ráfaga de 10 paquetes con prioridad DSCP `0xB8`), con el primero inmediato y **50 ms** entre mensajes por defecto: instantes 0, 50, 100, 150, 200, 250, 300, 350, 400 y 450 ms. En ajustes se elige **10, 25, 50 o 100 ms**, que abarcan 90, 225, 450 o 900 ms respectivamente. La selección se aplica al guardar y persiste sin reiniciar NDI.
 
-Los receptores deben actuar solo cuando cambia el valor para evitar cinco acciones por transición. UDP sigue sin confirmar entrega ni garantizar orden. Los intervalos son nominales, sujetos a la planificación de Android y la red. Al cancelar la cuenta se cancelan los `1` pendientes y se programan cinco `0`; un cierre normal de la actividad deja completar esa última ráfaga mientras el proceso siga vivo. Un cierre forzado o una pérdida de red puede impedirlo.
+Los receptores deben actuar solo cuando cambia el valor (de 0 a 1 o de 1 a 0) para descartar los mensajes redundantes de la ráfaga. UDP sigue sin confirmar entrega ni garantizar orden, pero la ráfaga de 10 mensajes con prioridad DSCP de baja latencia reduce drásticamente pérdidas en redes con tráfico mixto Wi-Fi y Ethernet. Al cancelar la cuenta se cancelan los `1` pendientes y se programan diez `0`.
 
 En cada computadora, abrir PowerShell en esta carpeta:
 

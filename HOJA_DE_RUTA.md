@@ -1,6 +1,6 @@
 # abismoCam — historial y hoja de ruta
 
-Última actualización: **25 de octubre de 2026**. Versión actual: **0.9.0** (código de versión Android: 10).
+Última actualización: **30 de octubre de 2026**. Versión actual: **0.9.1** (código de versión Android: 11).
 
 Aplicación Android de Lisandro Peralta para el proyecto **El abismo de la visibilidad**. Transmite la cámara por NDI, envía señales OSC y guarda fotografías con una cuenta regresiva local.
 
@@ -149,6 +149,22 @@ Validación: compilación y once pruebas unitarias correctas; lint con 0 errores
 - El estado NDI detenido se conserva al volver del segundo plano. La sesión de cámara y la notificación siguen activas hasta cerrar desde recientes.
 - Se conserva la cancelación de la cuenta al pasar a segundo plano con su ráfaga OSC de 0. El video no se cancela con ella.
 - Se añadieron pruebas de continuidad, bloqueo/desbloqueo, regreso, recreación de la actividad, eliminación de la tarea y detención desde notificación: ambas aprobaron. Pasaron 18 pruebas unitarias y siete de ocho regresiones Android; la captura de cinco segundos sigue fallando por falta de un cuadro nuevo en el emulador. Resultados y límites: VALIDACION.md.
+
+### 0.9.1 — estabilidad NDI, ráfaga OSC de 10 paquetes, 16:9 pantalla completa y rotación 180° (30/10/2026)
+
+- **Estabilidad de streaming NDI:**
+  - `clockVideo = 1` en `NdiSender.java` para cadenciar los cuadros mediante el reloj interno del SDK NDI oficial, evitando congelamiento de buffers en plugins de OBS (`obs-ndi` / DistroAV) y TouchDesigner.
+  - Reemplazo de `WIFI_MODE_FULL_HIGH_PERF` por `WIFI_MODE_FULL_LOW_LATENCY` en Android 10+ (`WIFI_SERVICE`) y desactivación del conteo de referencias para evitar micro-ahorros de energía del chip Wi-Fi.
+  - Monitor de red `ConnectivityManager.NetworkCallback` sin requisito de internet para redes locales aisladas: vinculación explícita del proceso (`bindProcessToNetwork`) a Ethernet/Wi-Fi y auto-reconexión limpia conservando el identificador de fuente `abismoCam_0001`.
+- **Ráfaga OSC de 10 paquetes con prioridad DSCP:**
+  - `OscRepeater.java` ampliado de 5 a 10 paquetes redundantes por transición (`1` al inicio, `0` al final, y 10 `1` + 10 `0` con cuenta de 0 s).
+  - Marcado DSCP de baja latencia (`TrafficClass 0xB8` / Expedited Forwarding) en `Osc.java` para evitar que los datagramas UDP se encolen detrás del tráfico de video NDI en WMM Wi-Fi.
+- **Encuadre vertical 16:9 a pantalla completa (Edge-to-edge):**
+  - Se retiró el encajonamiento 4:5 con bandas negras. `PreviewView` ocupa el 100% de la pantalla del dispositivo.
+  - Selector de resoluciones actualizado a **nHD (360 × 640)**, **qHD (540 × 960, predeterminada)** y **HD (720 × 1280)** a 15 o 30 fps.
+  - Controles de UI, disparador y encabezados superpuestos como overlay con degradés de contraste superior e inferior.
+- **Rotación 180° para teléfono invertido (montaje boca abajo):**
+  - Ajuste configurable en pantalla de ajustes que rota por software el stream de CameraX (`targetRotation = Surface.ROTATION_180`), la interfaz de usuario (`cameraControls` y `settingsPanel`), y sincroniza la captura de fotos y miniaturas.
 
 ## Estado actual y límites conocidos
 

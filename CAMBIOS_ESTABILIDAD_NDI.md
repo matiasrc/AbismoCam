@@ -47,3 +47,12 @@ Si descomprimís este archivo ZIP directamente en la carpeta raíz del repositor
 
 ### F. `Config.java`, `CameraViewport.java`, `TransmissionService.java` y `MainActivity.java` (Resoluciones 9:16)
 * **Resoluciones actualizadas a formato vertical 9:16:** Se reemplazaron las opciones de resolución por **`360 × 640` (Baja)**, **`540 × 960` (Media, predeterminada)** y **`720 × 1280` (Alta)** tanto en el selector de ajustes como en el `ViewPort` de CameraX (`Rational(9, 16)` con `RATIO_16_9_FALLBACK_AUTO_STRATEGY`) y en la vista previa (`CameraViewport`).
+
+### G. Vista previa a pantalla completa 16:9 (Edge-to-edge) con controles flotantes
+* **Eliminación de barras negras:** Se retiró el contenedor `CameraViewport` que forzaba el encaje en 4:5. El visor de la cámara (`PreviewView`) y el fotograma congelado (`ImageView`) ahora ocupan el 100% de la pantalla del celular (`MATCH_PARENT`).
+* **Controles flotantes (Overlay):** Encabezado, botón de ajustes, disparador y pie flotan directamente por encima del video con degradés de contraste superior e inferior (`topShade` y `bottomShade`), reproduciendo la experiencia visual de una aplicación de cámara nativa.
+
+### H. Rotación de 180° por software para montaje invertido (celular boca abajo)
+* **Rotación nativa en CameraX:** En `TransmissionService.java`, `Preview`, `ImageAnalysis` y `ViewPort` se configuran dinámicamente con `Surface.ROTATION_180` cuando la casilla de rotación 180° está activa. CameraX rota el flujo directo de cámara de forma acelerada por hardware.
+* **Sincronización de UI y capturas:** La capa de controles (`cameraControls`) y el panel de ajustes rotan 180° adaptando insets de barra de navegación/estado, mientras que el fotograma congelado y las miniaturas guardadas quedan en perfecta sincronía al derecho con el streaming NDI y la foto final.
+
