@@ -15,6 +15,10 @@ final class FrameScaler {
     private final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
 
     ByteBuffer scale(ByteBuffer source, int width, int height, int stride, Rect viewport, int outWidth, int outHeight) {
+        return scale(source, width, height, stride, viewport, outWidth, outHeight, false);
+    }
+
+    ByteBuffer scale(ByteBuffer source, int width, int height, int stride, Rect viewport, int outWidth, int outHeight, boolean invert) {
         if (input == null || input.getWidth() != width || input.getHeight() != height) {
             if (input != null) input.recycle();
             input = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -52,7 +56,10 @@ final class FrameScaler {
         else cropHeight = cropWidth * outHeight / outWidth;
         int left = viewport.left + (viewport.width() - cropWidth) / 2;
         int top = viewport.top + (viewport.height() - cropHeight) / 2;
+        canvas.save();
+        if (invert) canvas.rotate(180f, outWidth / 2f, outHeight / 2f);
         canvas.drawBitmap(input, new Rect(left, top, left + cropWidth, top + cropHeight), new Rect(0, 0, outWidth, outHeight), paint);
+        canvas.restore();
         ByteBuffer pixels = useSecondBuffer ? pixelsB : pixelsA;
         useSecondBuffer = !useSecondBuffer;
         pixels.clear(); output.copyPixelsToBuffer(pixels); pixels.flip();

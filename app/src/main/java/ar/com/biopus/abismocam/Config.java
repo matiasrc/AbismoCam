@@ -20,6 +20,7 @@ final class Config {
     String broadcastIp = "";
     int broadcastPort = 9000;
     boolean frontCamera = true;
+    boolean invertVertical = false;
     int width = 540;
     int height = 960;
     int fps = 30;
@@ -57,6 +58,7 @@ final class Config {
             if (config.broadcastPort < 1 || config.broadcastPort > 65535) config.broadcastPort = 9000;
             // La primera actualización a la interfaz de selfie empieza con la frontal.
             config.frontCamera = obj.optInt("schemaVersion", 1) < 2 || obj.optBoolean("frontCamera", true);
+            config.invertVertical = obj.optBoolean("invertVertical", false);
             if (obj.optInt("schemaVersion", 1) >= 3) {
                 int width = obj.optInt("width", 540);
                 if (width == 360 || width == 384 || width == 640) config.width = 360;
@@ -81,7 +83,7 @@ final class Config {
                 .put("sourceIdentifier", sourceIdentifier).put("sourceCounter", sourceCounter.toString())
                 .put("address", address).put("broadcast", broadcast)
                 .put("broadcastIp", broadcastIp).put("broadcastPort", broadcastPort)
-                .put("frontCamera", frontCamera).put("width", width).put("fps", fps).put("ndiMulticast", ndiMulticast)
+                .put("frontCamera", frontCamera).put("invertVertical", invertVertical).put("width", width).put("fps", fps).put("ndiMulticast", ndiMulticast)
                 .put("oscIntervalMs", oscIntervalMs).put("countdownSeconds", countdownSeconds);
             JSONArray list = new JSONArray();
             for (Osc.Destination d : destinations)

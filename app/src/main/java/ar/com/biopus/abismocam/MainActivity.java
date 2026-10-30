@@ -106,7 +106,7 @@ public final class MainActivity extends ComponentActivity {
     private Button streamButton;
     private TextView ndiIndicator;
     private FrameLayout cameraScreen;
-    private LinearLayout settingsPanel;
+    private LinearLayout settingsPanel, cameraControls;
     private boolean ndiWanted = true;
     private final Runnable openSettings = () -> { if (this.resumed && !sequence.isBusy()) showSettings(); };
     private ImageButton settingsButton;
@@ -149,6 +149,22 @@ public final class MainActivity extends ComponentActivity {
         showCamera();
     }
 
+    private void applyOrientation() {
+        boolean inv = config != null && config.invertVertical;
+        float rot = inv ? 180f : 0f;
+        if (cameraControls != null) {
+            cameraControls.setRotation(rot);
+            ViewCompat.requestApplyInsets(cameraControls);
+        }
+        if (previewView != null) {
+            previewView.setRotation(rot);
+        }
+        if (settingsPanel != null) {
+            settingsPanel.setRotation(rot);
+            ViewCompat.requestApplyInsets(settingsPanel);
+        }
+    }
+
     private LinearLayout root() {
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
@@ -156,7 +172,9 @@ public final class MainActivity extends ComponentActivity {
         root.setPadding(dp(20), dp(12), dp(20), dp(12));
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             androidx.core.graphics.Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(dp(20) + bars.left, dp(12) + bars.top, dp(20) + bars.right, dp(12) + bars.bottom);
+            boolean inv = config != null && config.invertVertical;
+            v.setPadding(dp(20) + (inv ? bars.right : bars.left), dp(12) + (inv ? bars.bottom : bars.top),
+                dp(20) + (inv ? bars.left : bars.right), dp(12) + (inv ? bars.top : bars.bottom));
             return insets;
         });
         settingsPanel = root;
@@ -171,6 +189,7 @@ public final class MainActivity extends ComponentActivity {
             settingsPanel = null;
             streamButton = null;
             settingsVisible = false;
+            applyOrientation();
             updateCountdownLabels();
             return;
         }
@@ -180,10 +199,13 @@ public final class MainActivity extends ComponentActivity {
         screen.setBackgroundColor(Color.BLACK);
         setContentView(screen);
         LinearLayout controls = column();
+        cameraControls = controls;
         screen.addView(controls, new FrameLayout.LayoutParams(-1, -1));
         ViewCompat.setOnApplyWindowInsetsListener(controls, (view, insets) -> {
             androidx.core.graphics.Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            view.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            boolean inv = config != null && config.invertVertical;
+            view.setPadding(inv ? bars.right : bars.left, inv ? bars.bottom : bars.top,
+                inv ? bars.left : bars.right, inv ? bars.top : bars.bottom);
             return insets;
         });
         FrameLayout stage = new FrameLayout(this);
@@ -191,7 +213,7 @@ public final class MainActivity extends ComponentActivity {
         viewport.setId(R.id.camera_viewport);
         stage.addView(viewport, new FrameLayout.LayoutParams(-1, -1, Gravity.CENTER));
         previewView = new PreviewView(this);
-        previewView.setImplementationMode(PreviewView.ImplementationMode.PERFORMANCE);
+        previewView.setImplementationMode(PreviewView.ImplementationMode.COMPATIBLE);
         previewView.setScaleType(PreviewView.ScaleType.FILL_CENTER);
         viewport.addView(previewView, new FrameLayout.LayoutParams(-1, -1));
         frozenFrame = new ImageView(this);
@@ -301,6 +323,7 @@ public final class MainActivity extends ComponentActivity {
         controls.addView(footer, new LinearLayout.LayoutParams(-1, -2));
         flash = new View(this); flash.setId(R.id.screen_flash); flash.setBackgroundColor(Color.WHITE); flash.setVisibility(View.GONE);
         viewport.addView(flash, new FrameLayout.LayoutParams(-1, -1));
+        applyOrientation();
         if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) bindCamera();
         else cameraPermission.launch(Manifest.permission.CAMERA);
     }
@@ -488,6 +511,7 @@ public final class MainActivity extends ComponentActivity {
         cancelCapture();
         settingsVisible = true;
         LinearLayout root = root();
+        applyOrientation();
         LinearLayout top = row();
         top.addView(label("Configuración", 24, TEXT), new LinearLayout.LayoutParams(0, -2, 1));
         Button back = button("Volver", false);
@@ -533,6 +557,8 @@ public final class MainActivity extends ComponentActivity {
         content.addView(label("Al guardar un cambio de transporte se reinicia NDI: los receptores pueden mostrar negro o el último cuadro mientras reconectan. Multicast requiere una red compatible; cada receptor negocia el modo y puede seguir usando unicast.", 12, MUTED));
         CheckBox front = check("Usar cámara frontal", config.frontCamera);
         content.addView(front);
+        CheckBox invertVertical = check("Rotar 180° (celular boca abajo)", config.invertVertical);
+        content.addView(invertVertical);
         content.addView(label("Resolución", 13, TEXT));
         android.widget.Spinner resolution = new android.widget.Spinner(this);
         resolution.setId(R.id.resolution);
@@ -625,6 +651,7 @@ public final class MainActivity extends ComponentActivity {
                 config.sourceIdentifier = identifierText; config.address = addressText;
                 config.broadcast = isBroadcast; config.broadcastIp = ipText; config.broadcastPort = portValue;
                 config.frontCamera = front.isChecked();
+                config.invertVertical = invertVertical.isChecked();
                 config.width = width;
                 config.height = width * 16 / 9;
                 config.fps = fps;
@@ -679,15 +706,19 @@ public final class MainActivity extends ComponentActivity {
             .setView(form).setPositiveButton("Guardar", null).setNegativeButton("Cancelar", null);
         if (index >= 0) builder.setNeutralButton("Eliminar", (d, w) -> { draft.remove(index); changed.run(); });
         AlertDialog dialog = builder.create();
-        dialog.setOnShowListener(d -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-            try {
-                Osc.Destination next = new Osc.Destination(name.getText().toString(), ip.getText().toString().trim(), parsePort(port), existing == null || existing.enabled);
-                for (int j = 0; j < draft.size(); j++) if (j != index && draft.get(j).ip.equals(next.ip) && draft.get(j).port == next.port)
-                    throw new IllegalArgumentException("Ese destino ya está en la lista.");
-                if (index < 0) draft.add(next); else draft.set(index, next);
-                changed.run(); dialog.dismiss();
-            } catch (IllegalArgumentException invalid) { error.setText(invalid.getMessage()); }
-        }));
+        dialog.setOnShowListener(d -> {
+            if (config != null && config.invertVertical && dialog.getWindow() != null)
+                dialog.getWindow().getDecorView().setRotation(180f);
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                try {
+                    Osc.Destination next = new Osc.Destination(name.getText().toString(), ip.getText().toString().trim(), parsePort(port), existing == null || existing.enabled);
+                    for (int j = 0; j < draft.size(); j++) if (j != index && draft.get(j).ip.equals(next.ip) && draft.get(j).port == next.port)
+                        throw new IllegalArgumentException("Ese destino ya está en la lista.");
+                    if (index < 0) draft.add(next); else draft.set(index, next);
+                    changed.run(); dialog.dismiss();
+                } catch (IllegalArgumentException invalid) { error.setText(invalid.getMessage()); }
+            });
+        });
         dialog.show();
     }
 

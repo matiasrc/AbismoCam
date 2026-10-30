@@ -383,7 +383,7 @@ public final class TransmissionService extends Service implements LifecycleOwner
             var plane = image.getPlanes()[0];
             if (plane.getPixelStride() != 4) throw new IllegalStateException("La cámara no produjo RGBA");
             ByteBuffer pixels = scaler.scale(plane.getBuffer(), image.getWidth(), image.getHeight(), plane.getRowStride(),
-                image.getCropRect(), current.width, current.height);
+                image.getCropRect(), current.width, current.height, current.invertVertical);
             if (request != null) {
                 try {
                     Bitmap bitmap = Bitmap.createBitmap(current.width, current.height, Bitmap.Config.ARGB_8888);
