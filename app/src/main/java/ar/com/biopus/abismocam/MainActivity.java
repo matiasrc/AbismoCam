@@ -105,8 +105,8 @@ public final class MainActivity extends ComponentActivity {
     private ShutterButton trigger;
     private Button streamButton;
     private TextView ndiIndicator;
-    private FrameLayout cameraScreen;
-    private LinearLayout settingsPanel, cameraControls;
+    private FrameLayout cameraScreen, cameraControls;
+    private LinearLayout settingsPanel;
     private boolean ndiWanted = true;
     private final Runnable openSettings = () -> { if (this.resumed && !sequence.isBusy()) showSettings(); };
     private ImageButton settingsButton;
@@ -202,7 +202,28 @@ public final class MainActivity extends ComponentActivity {
         cameraScreen = screen;
         screen.setBackgroundColor(Color.BLACK);
         setContentView(screen);
-        LinearLayout controls = column();
+
+        previewView = new PreviewView(this);
+        previewView.setId(R.id.camera_viewport);
+        previewView.setImplementationMode(PreviewView.ImplementationMode.COMPATIBLE);
+        previewView.setScaleType(PreviewView.ScaleType.FILL_CENTER);
+        screen.addView(previewView, new FrameLayout.LayoutParams(-1, -1));
+
+        frozenFrame = new ImageView(this);
+        frozenFrame.setId(R.id.frozen_frame);
+        frozenFrame.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        frozenFrame.setVisibility(View.GONE);
+        screen.addView(frozenFrame, new FrameLayout.LayoutParams(-1, -1));
+
+        View topShade = new View(this);
+        topShade.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xaa000000, Color.TRANSPARENT}));
+        screen.addView(topShade, new FrameLayout.LayoutParams(-1, dp(180), Gravity.TOP));
+
+        View bottomShade = new View(this);
+        bottomShade.setBackground(new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] {0xee000000, Color.TRANSPARENT}));
+        screen.addView(bottomShade, new FrameLayout.LayoutParams(-1, dp(320), Gravity.BOTTOM));
+
+        FrameLayout controls = new FrameLayout(this);
         cameraControls = controls;
         screen.addView(controls, new FrameLayout.LayoutParams(-1, -1));
         ViewCompat.setOnApplyWindowInsetsListener(controls, (view, insets) -> {
@@ -212,19 +233,6 @@ public final class MainActivity extends ComponentActivity {
                 inv ? bars.left : bars.right, inv ? bars.top : bars.bottom);
             return insets;
         });
-        FrameLayout stage = new FrameLayout(this);
-        CameraViewport viewport = new CameraViewport(this);
-        viewport.setId(R.id.camera_viewport);
-        stage.addView(viewport, new FrameLayout.LayoutParams(-1, -1, Gravity.CENTER));
-        previewView = new PreviewView(this);
-        previewView.setImplementationMode(PreviewView.ImplementationMode.COMPATIBLE);
-        previewView.setScaleType(PreviewView.ScaleType.FILL_CENTER);
-        viewport.addView(previewView, new FrameLayout.LayoutParams(-1, -1));
-        frozenFrame = new ImageView(this);
-        frozenFrame.setId(R.id.frozen_frame);
-        frozenFrame.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        frozenFrame.setVisibility(View.GONE);
-        viewport.addView(frozenFrame, new FrameLayout.LayoutParams(-1, -1));
 
         LinearLayout header = row();
         ndiIndicator = label("○ NDI", 12, MUTED);
@@ -258,8 +266,7 @@ public final class MainActivity extends ComponentActivity {
         header.addView(settingsSlot, new LinearLayout.LayoutParams(dp(94), dp(48)));
         header.setId(R.id.camera_header);
         header.setPadding(dp(18), dp(6), dp(18), dp(6));
-        controls.addView(header, new LinearLayout.LayoutParams(-1, -2));
-        controls.addView(stage, new LinearLayout.LayoutParams(-1, 0, 1));
+        controls.addView(header, new FrameLayout.LayoutParams(-1, -2, Gravity.TOP));
 
         countdown = label("", 136, Color.WHITE);
         countdown.setId(R.id.countdown);
@@ -268,7 +275,7 @@ public final class MainActivity extends ComponentActivity {
         countdown.setShadowLayer(dp(16), 0, dp(2), 0x77000000);
         countdown.setVisibility(View.GONE);
         countdown.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
-        viewport.addView(countdown, new FrameLayout.LayoutParams(-1, -2, Gravity.CENTER));
+        controls.addView(countdown, new FrameLayout.LayoutParams(-1, -2, Gravity.CENTER));
 
         LinearLayout footer = column();
         footer.setId(R.id.camera_footer);
@@ -324,9 +331,9 @@ public final class MainActivity extends ComponentActivity {
         TextView ndiLink = label("NDI® · ndi.video", 10, MUTED);
         ndiLink.setGravity(Gravity.CENTER); ndiLink.setPadding(0, dp(4), 0, 0);
         footer.addView(ndiLink);
-        controls.addView(footer, new LinearLayout.LayoutParams(-1, -2));
+        controls.addView(footer, new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM));
         flash = new View(this); flash.setId(R.id.screen_flash); flash.setBackgroundColor(Color.WHITE); flash.setVisibility(View.GONE);
-        viewport.addView(flash, new FrameLayout.LayoutParams(-1, -1));
+        screen.addView(flash, new FrameLayout.LayoutParams(-1, -1));
         applyOrientation();
         if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) bindCamera();
         else cameraPermission.launch(Manifest.permission.CAMERA);
