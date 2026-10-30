@@ -152,15 +152,19 @@ public final class MainActivity extends ComponentActivity {
     private void applyOrientation() {
         boolean inv = config != null && config.invertVertical;
         float rot = inv ? 180f : 0f;
+        if (cameraScreen != null) {
+            cameraScreen.setRotation(rot);
+        }
+        if (frozenFrame != null) {
+            frozenFrame.setRotation(rot);
+        }
+        if (lastPhoto != null) {
+            lastPhoto.setRotation(rot);
+        }
         if (cameraControls != null) {
-            cameraControls.setRotation(rot);
             ViewCompat.requestApplyInsets(cameraControls);
         }
-        if (previewView != null) {
-            previewView.setRotation(rot);
-        }
         if (settingsPanel != null) {
-            settingsPanel.setRotation(rot);
             ViewCompat.requestApplyInsets(settingsPanel);
         }
     }
@@ -562,7 +566,8 @@ public final class MainActivity extends ComponentActivity {
         content.addView(label("Resolución", 13, TEXT));
         android.widget.Spinner resolution = new android.widget.Spinner(this);
         resolution.setId(R.id.resolution);
-        resolution.setAdapter(new android.widget.ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new String[] {"Baja · 360 × 640", "Media · 540 × 960", "Alta · 720 × 1280"}));
+        resolution.setAdapter(new android.widget.ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item,
+            new String[] {"nHD · 640 × 360", "qHD · 960 × 540", "HD · 1280 × 720"}));
         resolution.setSelection(config.width == 360 ? 0 : config.width == 540 ? 1 : 2);
         content.addView(resolution);
         content.addView(label("Fotogramas por segundo", 13, TEXT));
@@ -571,7 +576,7 @@ public final class MainActivity extends ComponentActivity {
         fpsChoice.setAdapter(new android.widget.ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new String[] {"15 fps", "30 fps"}));
         fpsChoice.setSelection(config.fps == 15 ? 0 : 1);
         content.addView(fpsChoice);
-        content.addView(label("Formato vertical 9:16. La vista previa, NDI y la foto comparten el mismo encuadre; las bandas negras no se transmiten ni se guardan. Cambiar cámara, resolución o FPS reinicia brevemente el video al guardar.", 12, MUTED));
+        content.addView(label("Video vertical 9:16 (nHD 360×640, qHD 540×960, HD 720×1280). La vista previa, NDI y la foto comparten el mismo encuadre; las bandas negras no se transmiten ni se guardan. Cambiar cámara, resolución o FPS reinicia brevemente el video al guardar.", 12, MUTED));
         content.addView(label("Cuenta regresiva", 13, TEXT));
         android.widget.Spinner countdownChoice = new android.widget.Spinner(this);
         countdownChoice.setId(R.id.countdown_seconds);
@@ -642,7 +647,7 @@ public final class MainActivity extends ComponentActivity {
                 int portValue = parsePort(port);
                 int width = new int[] {360, 540, 720}[resolution.getSelectedItemPosition()];
                 int fps = fpsChoice.getSelectedItemPosition() == 0 ? 15 : 30;
-                boolean reconfigure = config.width != width || config.fps != fps || config.frontCamera != front.isChecked();
+                boolean reconfigure = config.width != width || config.fps != fps || config.frontCamera != front.isChecked() || config.invertVertical != invertVertical.isChecked();
                 boolean transportChanged = config.ndiMulticast != (transport.getSelectedItemPosition() == 1);
                 boolean sourceChanged = !config.sourceIdentifier.equals(identifierText);
                 boolean restartSource = sourceChanged && (streaming || starting);

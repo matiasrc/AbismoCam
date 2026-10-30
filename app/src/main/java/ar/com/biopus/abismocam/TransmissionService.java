@@ -411,7 +411,8 @@ public final class TransmissionService extends Service implements LifecycleOwner
                     lastConnections = ndi.connections();
                     lastConnectionsCheckMs = nowMs;
                 }
-                String status = String.format(Locale.US, "%d × %d · %.1f fps · %d receptor(es)", current.width, current.height,
+                String quality = current.width == 360 ? "nHD" : current.width == 720 ? "HD" : "qHD";
+                String status = String.format(Locale.US, "%s · %d × %d · %.1f fps · %d receptor(es)", quality, current.width, current.height,
                     frameCount * 1000.0 / elapsed, lastConnections);
                 main.post(() -> cameraMessage = status);
                 frameCount = 0; statsStart = nowMs;
