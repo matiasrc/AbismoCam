@@ -326,14 +326,15 @@ public final class TransmissionService extends Service implements LifecycleOwner
                 ResolutionSelector resolution = new ResolutionSelector.Builder()
                     .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
                     .setResolutionStrategy(new ResolutionStrategy(new Size(config.height, config.width), ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)).build();
-                preview = new Preview.Builder().setResolutionSelector(resolution).setTargetRotation(Surface.ROTATION_0)
+                int targetRotation = config.invertVertical ? Surface.ROTATION_180 : Surface.ROTATION_0;
+                preview = new Preview.Builder().setResolutionSelector(resolution).setTargetRotation(targetRotation)
                     .setTargetFrameRate(new Range<>(config.fps, config.fps)).build();
                 if (surface != null) preview.setSurfaceProvider(surface);
-                ImageAnalysis analysis = new ImageAnalysis.Builder().setResolutionSelector(resolution).setTargetRotation(Surface.ROTATION_0)
+                ImageAnalysis analysis = new ImageAnalysis.Builder().setResolutionSelector(resolution).setTargetRotation(targetRotation)
                     .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888).setOutputImageRotationEnabled(true)
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build();
                 analysis.setAnalyzer(executor, this::analyze);
-                UseCaseGroup group = new UseCaseGroup.Builder().setViewPort(new ViewPort.Builder(new Rational(9, 16), Surface.ROTATION_0)
+                UseCaseGroup group = new UseCaseGroup.Builder().setViewPort(new ViewPort.Builder(new Rational(9, 16), targetRotation)
                     .setScaleType(ViewPort.FILL_CENTER).build()).addUseCase(preview).addUseCase(analysis).build();
                 provider.bindToLifecycle(this, config.frontCamera ? CameraSelector.DEFAULT_FRONT_CAMERA : CameraSelector.DEFAULT_BACK_CAMERA, group);
                 cameraReady = true;
@@ -383,7 +384,7 @@ public final class TransmissionService extends Service implements LifecycleOwner
             var plane = image.getPlanes()[0];
             if (plane.getPixelStride() != 4) throw new IllegalStateException("La cámara no produjo RGBA");
             ByteBuffer pixels = scaler.scale(plane.getBuffer(), image.getWidth(), image.getHeight(), plane.getRowStride(),
-                image.getCropRect(), current.width, current.height, current.invertVertical);
+                image.getCropRect(), current.width, current.height, false);
             if (request != null) {
                 try {
                     Bitmap bitmap = Bitmap.createBitmap(current.width, current.height, Bitmap.Config.ARGB_8888);

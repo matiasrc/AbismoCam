@@ -152,20 +152,16 @@ public final class MainActivity extends ComponentActivity {
     private void applyOrientation() {
         boolean inv = config != null && config.invertVertical;
         float rot = inv ? 180f : 0f;
-        if (cameraScreen != null) {
-            cameraScreen.setRotation(rot);
-        }
-        if (frozenFrame != null) {
-            frozenFrame.setRotation(rot);
-        }
-        if (lastPhoto != null) {
-            lastPhoto.setRotation(rot);
-        }
         if (cameraControls != null) {
+            cameraControls.setRotation(rot);
             ViewCompat.requestApplyInsets(cameraControls);
         }
         if (settingsPanel != null) {
+            settingsPanel.setRotation(rot);
             ViewCompat.requestApplyInsets(settingsPanel);
+        }
+        if (lastPhoto != null) {
+            lastPhoto.setRotation(rot);
         }
     }
 
@@ -215,14 +211,6 @@ public final class MainActivity extends ComponentActivity {
         frozenFrame.setVisibility(View.GONE);
         screen.addView(frozenFrame, new FrameLayout.LayoutParams(-1, -1));
 
-        View topShade = new View(this);
-        topShade.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xaa000000, Color.TRANSPARENT}));
-        screen.addView(topShade, new FrameLayout.LayoutParams(-1, dp(180), Gravity.TOP));
-
-        View bottomShade = new View(this);
-        bottomShade.setBackground(new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] {0xee000000, Color.TRANSPARENT}));
-        screen.addView(bottomShade, new FrameLayout.LayoutParams(-1, dp(320), Gravity.BOTTOM));
-
         FrameLayout controls = new FrameLayout(this);
         cameraControls = controls;
         screen.addView(controls, new FrameLayout.LayoutParams(-1, -1));
@@ -233,6 +221,14 @@ public final class MainActivity extends ComponentActivity {
                 inv ? bars.left : bars.right, inv ? bars.top : bars.bottom);
             return insets;
         });
+
+        View topShade = new View(this);
+        topShade.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {0xaa000000, Color.TRANSPARENT}));
+        controls.addView(topShade, new FrameLayout.LayoutParams(-1, dp(180), Gravity.TOP));
+
+        View bottomShade = new View(this);
+        bottomShade.setBackground(new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] {0xee000000, Color.TRANSPARENT}));
+        controls.addView(bottomShade, new FrameLayout.LayoutParams(-1, dp(320), Gravity.BOTTOM));
 
         LinearLayout header = row();
         ndiIndicator = label("○ NDI", 12, MUTED);
